@@ -1,0 +1,268 @@
+/* This is the top-level stylesheet to be imported in all other layout
+   stylesheets. It defines the style attributes which are consistent
+   accross all viewport sizes.
+*/
+
+/* Django honeypot for comment forms (should always be empty). */
+#id_honeypot {
+    display: none;
+}
+
+/* === Colors and shapes === */
+.menubar-title {
+    padding: 15px 15px 15px;
+    margin-top: 2px;
+    margin-bottom: 2px;
+    line-height: 14px;
+    color: black;
+    text-shadow: none;
+    vertical-align: middle;
+    text-transform: uppercase;
+    display: block;
+}
+
+.brand-logo {
+    color: #3396D2;
+}
+
+.nav-right {
+    float: right;
+}
+
+.page-header h1 {
+	display: inline-block;
+}
+
+.helptext .btn {
+	margin: 15px 20px;
+	vertical-align: bottom;
+}
+
+.helptext label {
+	margin: 10px 0;
+	vertical-align: top;
+	display: inline-block;
+}
+
+.helptext input[type=checkbox] {
+	display: none;
+}
+
+.helptext .text-info {
+	display: none;
+}
+
+.helptext input[type=checkbox]:checked ~ .text-info {
+   display: inline-block;
+}
+
+.sidebar-nav {
+    background-color: #3396D2; /* logoBackgroundColor */
+}
+
+.nav-list > li > a {
+    color: white;
+    text-shadow: none;
+}
+
+.nav-list > li > a:hover {
+    background-color: #2083BF;
+}
+
+/* === Layout === */
+html, body {
+	height: 100%;
+}
+
+#wrap {
+	width: 100%;
+	min-height: 100%;
+}
+
+#main {
+	overflow:auto;
+	padding-bottom: 2em; /* stick to bottom */
+}
+
+footer {
+	position: relative;
+	margin-top: -2em;    /* stick to bottom */
+	clear:both;
+}
+
+footer {
+    bottom: 0;
+    text-align: center;
+    font-family:"Lucida Grande", Tahoma, Arial, sans-serif;
+    font-size:x-small;
+    border-left-style: solid;
+    border-left-color: #ffffff;
+    border-left-width: 1px;
+    border-top-width: 1em;
+}
+
+footer a {
+    text-shadow: none;
+}
+
+/* layout elements for which I couldn't figure out how to use bootstrap. */
+.form-btn {
+	display: inline-block;
+}
+
+.form-comment input[type="text"],
+.form-comment textarea {
+	width: 100%;
+}
+
+.extra-padding {
+	padding-bottom: 1em;
+}
+
+/* end of bootstrap knowledge. */
+
+@media (max-width: 979px) and (min-width: 768px) {
+	body {
+		padding-top: 0;
+	}
+}
+
+.nav-collapse {
+	float: right;
+}
+
+@media (max-width: 979px) {
+	.nav-collapse, .nav-collapse.collapse {
+		float: left;
+	}
+}
+
+#card-exp-month {
+	width: 90px;
+}
+
+#card-exp-year {
+	width: 90px;
+}
+
+.generic-button-group {
+	margin: 50px 16px 9px 16px;
+	text-align: center;
+}
+
+.generic-button-group a,
+.generic-button-group a:visited,
+.generic-button-group a:link {
+	color: white;
+	text-decoration: none;
+}
+
+
+/* Add border around invalid input box.
+   XXX We cannot rely on a toplevel ".error-input" as the information
+       will be overridden by ".login-form tr", etc.
+*/
+.error-input {
+	border:3px solid red;
+}
+
+/* Cool button */
+.generic-button,
+.generic-button:hover {
+ 	background: #68B9E5;
+	background-image: -webkit-linear-gradient(bottom, #4819C5 0%, #68B9E5 100%);
+	background-image: linear-gradient(to bottom right, #4819C5 0%, #68B9E5 100%);
+	color: #FFFFFF;
+    -webkit-user-select: none;
+    -webkit-box-shadow: 0 0 3px 3px #A0A0A0;
+       -moz-box-shadow: 0 0 3px 3px #A0A0A0;
+            box-shadow: 0 0 3px 3px #A0A0A0;
+	font-family: arial, sans-serif;
+    font-size: 3em;
+    text-align: center;
+    text-shadow: black -0.05em -0.05em 0.2em;
+    border: 1px solid #4a4242;
+    border-radius: 8px;
+    padding: 20px 16px 20px 16px;
+}
+
+.generic-button,
+.generic-button:visited,
+.generic-button:link {
+	color: white;
+	text-decoration: none;
+}
+
+/* Running jobs */
+#console {
+   border: 1px solid black;
+}
+
+/* online editor */
+#editor {
+        position: absolute;
+        width: 750px;
+        height: 500px;
+    }
+
+.editor-next {
+   margin-top: 500px;
+}
+
+/* style for tags with a specific class */
+div.MenuWidget {
+    margin: 0.2em;
+}
+
+div.MenuWidget h1 {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: black;
+}
+
+div.MenuWidget p {
+    text-align: left; 
+    text-justify: auto;
+}
+
+.code {
+    text-align: left;
+    overflow: auto;
+    background: transparent;
+    border: none;
+}
+
+
+/* use BRs to clear floats when necessary */
+br {
+    display: block;
+    width: 0;
+    height: 0;
+    clear: both;
+}
+
+
+img {
+  border: none;
+}
+
+.emphasis { font-style: italic; }
+
+/* address in about page */
+.fullAddress {
+    text-align: center;
+}
+
+.img-center {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.imgrss {
+    float:right;
+    border: none;
+    display: inline;
+}
+
+

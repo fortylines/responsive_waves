@@ -1,0 +1,369 @@
+/* Stylesheet for the Value Change Browser */
+
+.clear {
+    clear: both;
+}
+
+.browser-title {
+    float: none;
+    padding: 10px 15px 10px;
+    color: #000;
+    text-decoration: none;
+    text-shadow: 0 1px 0 #ffffff;
+}
+
+/* defaults for the whole browser panel */
+.browser-panel {
+    width: 100%;
+    text-align: left;
+    padding: 0;
+    margin: 0;
+    border: 1px black solid;
+    color: rgb(100,255,100);
+    background-color: #000;
+
+    /* We cut the visibility here, not in the edit-waveforms-panel
+       otherwise we end-up with space on the right because we shifted
+       the whole panel to the left. */
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.timeruler-input-group {
+    white-space: nowrap;
+}
+
+.timeruler-input {
+    display: inline-block;
+    width: 120px; /* (variables-panel-width / 2) - 5 */
+}
+
+.timeruler-input input {
+    width: 100px;
+}
+
+.ui-input-text{
+    margin-right: 0.8em;
+}
+
+div.ui-input-text input.ui-input-text {
+    width: 100%;
+    display: block;
+}
+
+#start_time,
+#end_time {
+    background-color: black;
+    color: rgb(100,255,100);
+}
+
+.variables-panel {
+    position: absolute;
+/* XXX If we do that, the margin is not taken into account    left: 0; */
+    display: inline-block;
+    width: 250px;
+    white-space: normal;
+    z-index: 40 /* edit-panel-visible */;
+
+    background-color: #000;
+}
+
+.variables-container {
+    background-color: black;
+}
+
+.variables-edit-tools-container {
+    text-align: center;
+}
+
+/* This root div contains the expandable edit tools panel
+   and the waveforms panel. */
+.edit-waveforms-panel {
+    position: absolute;
+    left: 100px; /* 250 - edit_tools_width */
+    z-index: 30 /* edit-panel-hidden */;
+    display: inline-block;
+    white-space: nowrap;
+    overflow: hidden;
+    background-color: black;
+}
+
+.edit-panel {
+    float: left;
+    display: inline-block;
+    width: 150px; /* edit_tools_width */
+    white-space: normal;
+    text-align: center;
+}
+
+.waveforms-panel {
+    width: 100%;
+    display: inline-block;
+    white-space: normal;
+    background-color: black;
+}
+
+.variable-list-edit-tools {
+    text-align: center;
+    padding-right: 5px;
+}
+
+/* fixed height such that variable name and waveform align. */
+.tools-timeruler-block {
+    height: 50px;
+}
+
+.var-wave-block {
+    height: 50px; /* var_wave_block_height */
+    display: table;
+    border-spacing:0;
+    border-collapse:collapse;
+    width: 100%;
+}
+
+.var-wave-block div {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+/* mouse button pressed down. */
+.var-wave-block:active {
+    cursor: -webkit-grabbing;
+}
+
+#waveform_table th {
+    border: none;
+    width: 10em;
+    border-right: 1px #ffffff solid;
+}
+
+#waveform_table td {
+    border: none;
+    padding-top: 5px;
+    /* We have to set the color explicitely to be the same as #waveform_table
+       here otherwise this.element.css("background-color") will return
+       rgba(0,0,0,0) in _drawVal. */
+    background-color: rgba(0,0,0,1);
+}
+
+.title{
+    margin: auto;
+    padding: 0px;
+    background: none;
+}
+
+/* total width and height of btn-edit-* must be equal
+   to var_wave_block_height */
+[class^="btn-edit-"] {
+    display: inline-block;
+    margin: 5px;
+    padding: 0px;
+}
+
+.btn-img-box {
+    padding: 4px;
+}
+
+/* 3 icon-bar-list <span> fits inside a btn-edit-list
+   so their size and position is dependent on var_wave_block_height. */
+.icon-bar-list {
+    display: block;
+    margin: 7px auto;
+    width: 28px;
+    height: 2px;
+    background-color: rgb(100,255,100); /* variable_default_color */
+    -webkit-border-radius: 1px;
+    -moz-border-radius: 1px;
+    border-radius: 1px;
+    -webkit-box-shadow: 0 1px 0 rgba(0,0,0,0.25);
+    -moz-box-shadow: 0 1px 0 rgba(0,0,0,0.25);
+    box-shadow: 0 1px 0 rgba(0,0,0,0.25);
+}
+
+.btn-navbar-list {
+    border: 1px solid rgb(100,255,100); /* variable_default_color */
+}
+
+.ui-widget-overlay{
+    position:absolute;
+    left: 0px;
+    top: 0px;
+}
+
+.ui-dialog-titlebar {
+    display: none;
+}
+
+.picker-container {
+   display: none;
+}
+
+.picker {
+    border: 1px outset #666;
+    padding: 4px;
+    background-color: #efefef;
+}
+
+.picker table {
+    margin: auto;
+    border-collapse: separate;
+    border-spacing: 4px;
+}
+
+.picker table .btn {
+    width: 64px;
+    height: 64px;
+    vertical-align: middle;
+}
+
+.picker .btn {
+    width: 100%;
+}
+
+.on-black,
+.on-black:hover {
+  background-color: #000;
+  *background-color: #222;
+  background-image: -moz-linear-gradient(top, #0f0f0f, #000);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#0f0f0f), to(#000));
+  background-image: -webkit-linear-gradient(top, #0f0f0f, #000);
+  background-image: -o-linear-gradient(top, #0f0f0f, #000);
+  background-image: linear-gradient(to bottom, #0f0f0f, #000);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff0f0f0f', endColorstr='#ff000000', GradientType=0);
+}
+
+.on-white,
+.on-white:hover {
+  background-color: #ffffff;
+  *background-color: #f5f5f5;
+  background-image: -moz-linear-gradient(top, #ffffff, #f5f5f5);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ffffff), to(#f5f5f5));
+  background-image: -webkit-linear-gradient(top, #ffffff, #f5f5f5);
+  background-image: -o-linear-gradient(top, #ffffff, #f5f5f5);
+  background-image: linear-gradient(to bottom, #ffffff, #f5f5f5);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffffff', endColorstr='#fff5f5f5', GradientType=0);
+ }
+
+.purple-wave { color: #800080; }
+.red-wave { color: #f00; }
+.green-wave { color: #0f0; }
+.blue-wave { color: #00f; }
+.white-wave { color: #fff; }
+.black-wave { color: #000; }
+
+.ui-ruler-disp-track {
+    background-color: red;
+    position: relative;
+    height: 15px; /* ruler-disp-height */
+}
+
+
+/* These classes are derived from the jquery.mobile-1.3.0.css */
+.ui-slider-track {
+    position: relative;
+    overflow: visible;
+    height: 15px;
+    margin: 0 15px 0 15px;
+    top: 6px;
+}
+
+.ui-btn-corner-all {
+    -webkit-background-clip: padding;
+    background-clip: padding-box;
+    -webkit-border-radius: 1em /*{global-radii-buttons}*/;
+    border-radius: 1em /*{global-radii-buttons}*/;
+}
+
+
+.ui-slider-track .ui-btn.ui-slider-handle {
+position: absolute;
+z-index: 1;
+top: 50%;
+width: 28px;
+height: 28px;
+margin: -15px 0 0 -15px;
+outline: 0;
+}
+
+.ui-btn-up-c:visited, .ui-btn-up-c a.ui-link-inherit {
+color: #2f3e46 /*{c-bup-color}*/;
+}
+
+.ui-btn {
+display: block;
+text-align: center;
+cursor: pointer;
+position: relative;
+margin: .5em 0;
+padding: 0;
+}
+
+.ui-shadow {
+-moz-box-shadow: 0px 1px 3px /*{global-box-shadow-size}*/ rgba(0,0,0,.2) /*{global-box-shadow-color}*/;
+-webkit-box-shadow: 0px 1px 3px /*{global-box-shadow-size}*/ rgba(0,0,0,.2) /*{global-box-shadow-color}*/;
+box-shadow: 0px 1px 3px /*{global-box-shadow-size}*/ rgba(0,0,0,.2) /*{global-box-shadow-color}*/;
+}
+
+.ui-btn-down-c {
+    font-family: Helvetica, Arial, sans-serif /*{global-font-family}*/;
+    text-decoration: none;
+    border: 1px solid #bbb /*{c-bdown-border}*/;
+    background: #d6d6d6 /*{c-bdown-background-color}*/;
+    font-weight: bold;
+    color: #222 /*{c-bdown-color}*/;
+    text-shadow: 0 /*{c-bdown-shadow-x}*/ 1px /*{c-bdown-shadow-y}*/ 0 /*{c-bdown-shadow-radius}*/ #fff /*{c-bdown-shadow-color}*/;
+    background-image: -webkit-gradient(linear, left top, left bottom, from( #d0d0d0 /*{c-bdown-background-start}*/), to( #dfdfdf /*{c-bdown-background-end}*/));
+    background-image: -webkit-linear-gradient( #d0d0d0 /*{c-bdown-background-start}*/, #dfdfdf /*{c-bdown-background-end}*/);
+    background-image: -moz-linear-gradient( #d0d0d0 /*{c-bdown-background-start}*/, #dfdfdf /*{c-bdown-background-end}*/);
+    background-image: -ms-linear-gradient( #d0d0d0 /*{c-bdown-background-start}*/, #dfdfdf /*{c-bdown-background-end}*/);
+    background-image: -o-linear-gradient( #d0d0d0 /*{c-bdown-background-start}*/, #dfdfdf /*{c-bdown-background-end}*/);
+    background-image: linear-gradient( #d0d0d0 /*{c-bdown-background-start}*/, #dfdfdf /*{c-bdown-background-end}*/);
+}
+
+.ui-btn-hover-c {
+    border: 1px solid #bbb /*{c-bhover-border}*/;
+    background: #dfdfdf /*{c-bhover-background-color}*/;
+    font-weight: bold;
+    color: #222 /*{c-bhover-color}*/;
+    text-shadow: 0 /*{c-bhover-shadow-x}*/ 1px /*{c-bhover-shadow-y}*/ 0 /*{c-bhover-shadow-radius}*/ #fff /*{c-bhover-shadow-color}*/;
+    background-image: -webkit-gradient(linear, left top, left bottom, from( #f6f6f6 /*{c-bhover-background-start}*/), to( #e0e0e0 /*{c-bhover-background-end}*/)); /* Saf4+, Chrome */
+    background-image: -webkit-linear-gradient( #f6f6f6 /*{c-bhover-background-start}*/, #e0e0e0 /*{c-bhover-background-end}*/); /* Chrome 10+, Saf5.1+ */
+    background-image:    -moz-linear-gradient( #f6f6f6 /*{c-bhover-background-start}*/, #e0e0e0 /*{c-bhover-background-end}*/); /* FF3.6 */
+    background-image:     -ms-linear-gradient( #f6f6f6 /*{c-bhover-background-start}*/, #e0e0e0 /*{c-bhover-background-end}*/); /* IE10 */
+    background-image:      -o-linear-gradient( #f6f6f6 /*{c-bhover-background-start}*/, #e0e0e0 /*{c-bhover-background-end}*/); /* Opera 11.10+ */
+    background-image:         linear-gradient( #f6f6f6 /*{c-bhover-background-start}*/, #e0e0e0 /*{c-bhover-background-end}*/);
+}
+.ui-btn-hover-c:visited,
+.ui-btn-hover-c:hover,
+.ui-btn-hover-c a.ui-link-inherit {
+    color: #2f3e46 /*{c-bhover-color}*/;
+}
+
+.ui-btn-up-c  {
+    font-family: Helvetica, Arial, sans-serif /*{global-font-family}*/;
+    text-decoration: none;
+    border: 1px solid #ccc /*{c-bup-border}*/;
+    background: #eee /*{c-bup-background-color}*/;
+    font-weight: bold;
+    color: #222 /*{c-bup-color}*/;
+    text-shadow: 0 /*{c-bup-shadow-x}*/ 1px /*{c-bup-shadow-y}*/ 0 /*{c-bup-shadow-radius}*/ #fff /*{c-bup-shadow-color}*/;
+    background-image: -webkit-gradient(linear, left top, left bottom, from( #fff /*{c-bup-background-start}*/), to( #f1f1f1 /*{c-bup-background-end}*/));
+    background-image: -webkit-linear-gradient( #fff /*{c-bup-background-start}*/, #f1f1f1 /*{c-bup-background-end}*/);
+    background-image: -moz-linear-gradient( #fff /*{c-bup-background-start}*/, #f1f1f1 /*{c-bup-background-end}*/);
+    background-image: -ms-linear-gradient( #fff /*{c-bup-background-start}*/, #f1f1f1 /*{c-bup-background-end}*/);
+    background-image: -o-linear-gradient( #fff /*{c-bup-background-start}*/, #f1f1f1 /*{c-bup-background-end}*/);
+    background-image: linear-gradient( #fff /*{c-bup-background-start}*/, #f1f1f1 /*{c-bup-background-end}*/);
+}
+
+.little {
+//  stroke: #666;
+  stroke-width: 1.5px;
+}
+
+.svg-wave-text {
+    text-anchor: middle;
+    dominant-baseline: central;
+    font-family: "Courier New", monospace;
+}

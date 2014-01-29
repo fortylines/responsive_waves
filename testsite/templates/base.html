@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html class="no-js">
+<head>
+  <title>Waveform Testsite</title>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Fortylines LLC">
+  <meta name="copyright" content="Copyright (c) 2014 Fortylines LLC.">
+  {% block localheader %}
+  {% endblock %}
+</head>
+<body>
+  {% block menubar %}
+  {% endblock %}
+  <div>
+    <ul id="messages" class="messages">
+      {% for message in messages %}
+      {% if message.tags %}<li class="alert alert-{{ message.tags }}">
+        {% else %}<li class="alert">{% endif %}
+        {{ message }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% block content %}{% endblock %}
+  {% block footer %}{% endblock %}
+</body>
+{% block scripts %}{% endblock %}
+</html>
