@@ -18,10 +18,11 @@ urlpatterns = patterns('',
     url(r'^values/(?P<waveform_id>\S+)/$',
         time_records, name='responsive_waves_time_records'),
 
-    url(r'^browser/(?P<browser_id>\S+)/ranks',
+    url(r'^browser/(?P<pathname>\S+)/ranks',
         update_ranks, name='responsive_waves_update_ranks'),
-    url(r'^browser/(?P<browser_id>\S+)/variables/(?P<pk>\S+)',
+    url(r'^browser/(?P<pathname>\S+)/variables/(?P<pk>\S+)',
         update_variable, name='responsive_waves_update_variable'),
+
    )
 
 

@@ -4,9 +4,13 @@
 
 /** Helper function to create a call to the http api.
 */
-function api_location(command) {
-    return document.location.origin
-        + '/api/' + command + '/' + $('.browser-panel').attr('id') + '/';
+function api_location(category, command) {
+    apiLoc = document.location.origin
+        + '/api/' + category + '/' + $('.browser-panel').attr('id') + '/';
+    if( command ) {
+        apiLoc += command
+    }
+    return apiLoc;
 }
 
 /** Helper function to return a font height, ascent, and descent in pixels
@@ -214,7 +218,7 @@ $.widget( "fortylines.waveform", $.fortylines.waveWidget, {
 
     update: function(){
         var $this = this;
-        $.getJSON(api_location('values'),
+        $.getJSON(api_location('values', ''),
                   { 'vars': '["' + $this.options.path + '"]',
                     'start_time': $this.options.disp_start_time,
                     'end_time': $this.options.disp_end_time,
@@ -733,7 +737,7 @@ function VCBViewModel(variable_list) {
             data[key] = newVal;
             $.ajax({
                 type: "PUT",
-                url: api_location('variables/' + id),
+                url: api_location('browser', 'variables/' + id),
                 data: ko.toJSON(data),
                 datatype: "json",
                 contentType: "application/json; charset=utf-8",
@@ -759,7 +763,7 @@ function VCBViewModel(variable_list) {
 
         self.query.subscribe(function(newValue) {
             // load variables
-            $.getJSON(api_location('variables'),
+            $.getJSON(api_location('variables', ''),
                 { 'q': newValue },
                 function success(data, textStatus, jqXHR) {
                     self.candidates.removeAll()
@@ -812,7 +816,7 @@ function VCBViewModel(variable_list) {
                }
                 $.ajax({
                     type: "PUT",
-                    url: api_location('ranks'),
+                    url: api_location('browser','ranks'),
                     data: ko.toJSON(ranks),
                     datatype: "json",
                     contentType: "application/json; charset=utf-8",
@@ -1077,6 +1081,9 @@ function initWaveBrowserWhenDocumentReady(csrf_token) {
         browserResize($(".browser-panel"), cvm);
     });
 
+    /* XXX We shouldn't have to do this. The list of variables for a browser
+       is loaded at the same time as the page. The values should be loaded
+       from a trigger to add_variable.
     // load variables
     $.getJSON(api_location('browser'),
          {},
@@ -1086,4 +1093,5 @@ function initWaveBrowserWhenDocumentReady(csrf_token) {
               cvm.add_variable(data[i].path, data[i].style, data[i].shape);
           }
     });
+    */
 }

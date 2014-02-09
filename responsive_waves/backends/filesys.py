@@ -10,8 +10,10 @@ from responsive_waves.utils import leafs_match
 
 LOGGER = logging.getLogger(__name__)
 
-def _as_abspath(vcd_path):
+def _as_abspath(vcd_path, ext=None):
     '''Returns a pathname to a fixture for a VCD file.'''
+    if ext and not vcd_path.endswith(ext):
+        vcd_path = vcd_path + ext
     vcd_abspath = os.path.join(settings.BUILDTOP, vcd_path)
     if not os.path.exists(vcd_abspath):
         if getattr(settings, 'USE_FIXTURES', False):
@@ -28,7 +30,7 @@ class VCDFileBackend:
         Returns a scope tree (as a python dictionnary) of variables defined
         in *vcd_path*.
         """
-        vcd_abspath = _as_abspath(vcd_path + '.vcd')
+        vcd_abspath = _as_abspath(vcd_path, '.vcd')
         with open(vcd_abspath) as vcd_file:
             defs = vcd.definitions(vcd_file)
             return json.loads(defs)['definitions']
@@ -45,7 +47,7 @@ class VCDFileBackend:
         values = {}
         leafs = leafs_match(VCDFileBackend.load_variables(vcd_path), variables)
         id_codes = [ leaf.encode('ascii','ignore') for leaf in leafs.keys() ]
-        vcd_abspath = _as_abspath(vcd_path + '.vcd')
+        vcd_abspath = _as_abspath(vcd_path, '.vcd')
         if os.path.exists(vcd_abspath):
             data = {}
             with open(vcd_abspath) as vcd_file:

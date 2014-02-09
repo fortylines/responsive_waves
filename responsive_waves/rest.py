@@ -67,6 +67,8 @@ class UpdateVariableView(UpdateAPIView):
 
     model = Variable
     serializer_class = VariableSerializer
+    slug_url_kwarg = 'path'
+    slug_field = 'path'
 
     def update(self, request, *args, **kwargs):
         LOGGER.debug('update args=%s, kwargs=%s, DATA=%s',
@@ -146,19 +148,23 @@ def update_ranks(request, pathname):
     '''DATA is a list of variable ids. The ordering indicates the new ranks.'''
     LOGGER.debug('[update_ranks] request.DATA: %s', request.DATA)
     browser, wave_path = browser_from_path(pathname)
-    variable_list = Variable.objects.filter(
-        browser=browser, shown=True).order_by('rank')
-    for rank, pk in enumerate(request.DATA):
-        this_variable = variable_list.get(pk=pk)
-        LOGGER.info(
-            "[update_ranks] %s from %d to %d",
-            this_variable.id, this_variable.rank, rank)
-        this_variable.rank = rank
-        this_variable.save()
-        variable_list = variable_list.exclude(pk=pk)
-    if len(variable_list) > 0:
-        # XXX This is not a full ordering, abort
-        raise ValueError
+    if browser:
+        # XXX If we don't have a browser here, there is nothing to update
+        # in the database.
+        variable_list = Variable.objects.filter(
+            browser=browser, shown=True).order_by('rank')
+        for rank, path in enumerate(request.DATA):
+            this_variable = Variable.objects.get_or_create(
+                path=path, browser=browser, shown=True)
+            LOGGER.info(
+                "[update_ranks] %s from %d to %d",
+                this_variable.id, this_variable.rank, rank)
+            this_variable.rank = rank
+            this_variable.save()
+            variable_list = variable_list.exclude(path=path)
+        if len(variable_list) > 0:
+            # XXX This is not a full ordering, abort
+            raise ValueError
     return Response("OK")
 
 
@@ -166,7 +172,7 @@ def update_ranks(request, pathname):
 def update_variable(request, pathname, pk):
     '''Update the display state associated to a variable.'''
     view = UpdateVariableView.as_view()
-    return view(request, pk=pk)
+    return view(request, path=pk)
 
 
 @api_view(['GET'])
