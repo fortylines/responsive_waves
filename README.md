@@ -17,5 +17,8 @@ the prerequisites, create the database, then run the testsite webapp.
     # Browse http://localhost:8000/
 
 Note you might have to adjust your LD_LIBRARY_PATH or DYLD_LIBRARY_PATH
-shell variable to find the dynamic library.
+shell variable to find the dynamic library. For example:
+
+    $ export DYLD_LIBRARY_PATH=$VIRTUAL_ENV/lib
+
 
