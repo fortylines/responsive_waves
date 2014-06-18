@@ -1,16 +1,35 @@
-# Copyright (c) 2013, Fortylines LLC
-#   All rights reserved.
+# Copyright (c) 2012-2014, Fortylines LLC
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#
+# 1. Redistributions of source code must retain the above copyright notice,
+#    this list of conditions and the following disclaimer.
+# 2. Redistributions in binary form must reproduce the above copyright
+#    notice, this list of conditions and the following disclaimer in the
+#    documentation and/or other materials provided with the distribution.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+# "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+# TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+# PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
+# CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+# EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+# PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+# OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+# WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+# OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+# ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 '''Dynamic pages for browsing VCD files.'''
 
 import json, logging, os, re
 
-from django.views.generic.list import ListView
 from django.views.decorators.http import require_GET, require_POST
 from django.shortcuts import redirect, render_to_response
 from django.core.context_processors import csrf
 from django.core.urlresolvers import reverse
-from django.core import serializers
 from django.http import Http404
 from django import forms
 
@@ -31,10 +50,10 @@ def browse(request, waveform_id, title='', browser_path=None):
     browser, wave_path = browser_from_path(waveform_id)
     if not title:
         title = wave_path
-    variable_list = Variable.objects.filter(
+    variables = Variable.objects.filter(
         browser=browser, shown=True).order_by('rank')
     serialized_list = []
-    for entry in variable_list:
+    for entry in variables:
         fields = {}
         try:
             fields['style'] = json.loads(entry.style)
@@ -50,7 +69,7 @@ def browse(request, waveform_id, title='', browser_path=None):
             fields['shape'] = 'analog'
         fields['path'] = entry.path
         fields['id'] = str(entry.pk)
-        serialized_list += [ fields ]
+        serialized_list += [fields]
     if not browser_path:
         browser_path = waveform_id
     context = {
@@ -66,7 +85,7 @@ def browse(request, waveform_id, title='', browser_path=None):
     return render_to_response("responsive_waves/browse.html", context)
 
 
-
+#pylint: disable=too-many-arguments,dangerous-default-value
 def variable_list_app(request, browser, wave_path, fullpath_variable_list,
                       prefix=None, query=None,
                       write_permission=True, pathname=None):
@@ -75,13 +94,13 @@ def variable_list_app(request, browser, wave_path, fullpath_variable_list,
     and modules rooted at *var_path*.
     '''
     try:
-        variable_list = []
+        variables = []
         for var_display in fullpath_variable_list:
             try:
-                variable_list += [ Variable.objects.get(
-                        browser=browser, path=var_display.path) ]
+                variables += [Variable.objects.get(
+                        browser=browser, path=var_display.path)]
             except Variable.DoesNotExist:
-                variable_list += [ var_display ]
+                variables += [var_display]
         if not pathname:
             if browser:
                 pathname = os.path.join(str(browser.id), wave_path)
@@ -91,11 +110,11 @@ def variable_list_app(request, browser, wave_path, fullpath_variable_list,
             'write_permission': write_permission,
             'browser_path': pathname,
             'root_path': prefix,
-            'variable_list': variable_list
+            'variable_list': variables
             }
         context.update(csrf(request))
         if query:
-            context.update({ 'query': query })
+            context.update({'query': query})
         if prefix:
             context.update({'root_prefixes': variables_root_prefixes(prefix)})
         return render_to_response(
@@ -124,8 +143,8 @@ class VariableToggleForm(forms.Form):
     path = forms.CharField(max_length=255)
 
 
-def variable_toggle_app(request, browser, wave_path,
-                        variable_dict={}, write_permission=True,
+def variable_toggle_app(request, browser, wave_path, variable_dict={},
+                        write_permission=True,#pylint: disable=unused-argument
                         pathname=None):
     '''
     Add a variable *var_path* to the waveform browser for *slug*.
@@ -147,7 +166,7 @@ def variable_toggle_app(request, browser, wave_path,
             pathname = wave_path
     return redirect(request.META.get('HTTP_REFERER',
                        reverse('responsive_waves_variable_list',
-                               args=(pathname,''))))
+                               args=(pathname, ''))))
 
 
 
@@ -167,19 +186,16 @@ def variable_list(request, pathname, var_path):
 def variable_search(request, pathname):
     browser, wave_path = browser_from_path(pathname)
     return variable_search_app(request, browser, wave_path,
-                               variable_dict = load_variables(wave_path))
-
-
-class VariableToggleForm(forms.Form):
-    var_path = forms.CharField(max_length=255)
+                               variable_dict=load_variables(wave_path))
 
 
 @require_POST
-def variable_toggle(request, pathname, variables_scope={}):
+def variable_toggle(request, pathname,
+                    variables_scope={}): #pylint: disable=unused-argument
     '''
     Add a variable *var_path* to the waveform browser for *slug*.
     '''
     browser, wave_path = browser_from_path(pathname)
     return variable_toggle_app(request, browser, wave_path,
-                               variable_dict = load_variables(wave_path))
+                               variable_dict=load_variables(wave_path))
 

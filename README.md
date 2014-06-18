@@ -1,7 +1,9 @@
 A Django app to view simulation traces (VCD) with a responsive HTML5 interface.
 
-Development
-===========
+Installation
+============
+
+You will first need to install [vcd2json](https://github.com/fortylines/vcd2json).
 
 After cloning the repository, create a virtualenv environment, install
 the prerequisites, create the database, then run the testsite webapp.
@@ -13,4 +15,7 @@ the prerequisites, create the database, then run the testsite webapp.
     $ python manage.py runserver
 
     # Browse http://localhost:8000/
+
+Note you might have to adjust your LD_LIBRARY_PATH or DYLD_LIBRARY_PATH
+shell variable to find the dynamic library.
 

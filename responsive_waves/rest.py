@@ -22,7 +22,7 @@
 # OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 # ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import json, logging, re, time
+import json, logging, re
 from rest_framework import serializers
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -48,6 +48,8 @@ def browser_from_path(url_path):
 
 
 class VariableSerializer(serializers.ModelSerializer):
+    #pylint: disable=no-init,old-style-class
+
     class Meta:
         model = Variable
         fields = ('style', 'shape')
@@ -132,7 +134,6 @@ def time_records(request, waveform_id):
         ...
     ] }
     """
-    query_names = {}
     variables = json.loads(request.REQUEST.get('vars', "[]"))
     if not isinstance(variables, list):
         raise ValueError
@@ -147,7 +148,7 @@ def time_records(request, waveform_id):
 def update_ranks(request, pathname):
     '''DATA is a list of variable ids. The ordering indicates the new ranks.'''
     LOGGER.debug('[update_ranks] request.DATA: %s', request.DATA)
-    browser, wave_path = browser_from_path(pathname)
+    browser, _ = browser_from_path(pathname)
     if browser:
         # XXX If we don't have a browser here, there is nothing to update
         # in the database.
@@ -166,13 +167,6 @@ def update_ranks(request, pathname):
             # XXX This is not a full ordering, abort
             raise ValueError
     return Response("OK")
-
-
-@api_view(['PUT'])
-def update_variable(request, pathname, pk):
-    '''Update the display state associated to a variable.'''
-    view = UpdateVariableView.as_view()
-    return view(request, path=pk)
 
 
 @api_view(['GET'])
@@ -207,9 +201,11 @@ def list_variables(request, waveform_id):
         # No query, we return no results.
         query = r'^$'
         if False:
-            # Return variables defined at the toplevel when no scope is specified.
-            query = (r'^[^%(node_sep)s]+%(node_sep)s[^%(node_sep)s]+%(node_sep)s?$'
-                     % {'node_sep': NODE_SEP})
+            # Alternative: return variables defined at the toplevel
+            # when no scope is specified.
+            query = (
+                r'^[^%(node_sep)s]+%(node_sep)s[^%(node_sep)s]+%(node_sep)s?$'
+                % {'node_sep': NODE_SEP})
     if query.startswith(NODE_SEP):
         query = query[1:]
     query_variables = variables_match(query, top_scope)
@@ -226,7 +222,7 @@ def list_variables(request, waveform_id):
                     path=variable.path, browser=browser)
             except Variable.DoesNotExist:
                 pass
-            decorated_variables += [ variable ]
+            decorated_variables += [variable]
     else:
         decorated_variables = query_variables
     # This list of variables is decorated with the persistant state at this
@@ -252,5 +248,5 @@ def list_variables(request, waveform_id):
             fields['shape'] = 'hex'
         else:
             fields['shape'] = 'analog'
-        serialized_variables += [ fields ]
+        serialized_variables += [fields]
     return Response(serialized_variables)
