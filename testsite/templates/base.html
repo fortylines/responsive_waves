@@ -9,6 +9,22 @@
   <meta name="copyright" content="Copyright (c) 2014 Fortylines LLC.">
   {% block localheader %}
   {% endblock %}
+  {% if csrf_token %}
+  <script type="text/javascript">
+    function csrfSafeMethod(method) {
+        // these HTTP methods do not require CSRF protection
+        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
+    $.ajaxSetup({
+        crossDomain: false, // obviates need for sameOrigin test
+        beforeSend: function(xhr, settings) {
+            if (!csrfSafeMethod(settings.type)) {
+                xhr.setRequestHeader("X-CSRFToken", "{{csrf_token}}");
+            }
+        }
+    });
+  </script>
+  {% endif %}
 </head>
 <body>
   {% block menubar %}

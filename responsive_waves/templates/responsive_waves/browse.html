@@ -223,6 +223,8 @@
 <script src="{% static 'js/wavebrowser.js' %}" type="text/javascript"></script>
 <script type="text/javascript">
 /* Dynamically add variables in the DOM when the document is ready. */
-$(document).ready(initWaveBrowserWhenDocumentReady("{{csrf_token}}"));
+$(document).ready(function() {
+    initWaveBrowserWhenDocumentReady("{{csrf_token}}", {{variable_list|safe}});
+});
 </script>
 {% endblock %}

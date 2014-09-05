@@ -26,6 +26,23 @@
    Browser application.
  */
 
+/** Helper function to show messages
+ */
+function showMessages(messages, style) {
+    $("#messages").removeClass('hidden');
+    var messageBlock = $('<div class="alert alert-block"><button type="button" class="close" data-dismiss="alert">&times;</button></div>');
+    $("#messages .row").append(messageBlock);
+    if( style ) {
+        messageBlock.addClass("alert-" + style);
+    }
+    for( var i = 0; i < messages.length; ++i ) {
+        messageBlock.append('<p>' + messages[i] + '</p>');
+    }
+    $("html, body").animate({ scrollTop: $("#messages").offset().top - 50 },
+        500);
+}
+
+
 /** Helper function to create a call to the http api.
 */
 function api_location(category, command) {
@@ -36,6 +53,16 @@ function api_location(category, command) {
     }
     return apiLoc;
 }
+
+
+var responsive_waves_api = {
+    'scope': 'scope-not-used',
+    'list_variables': api_location('variables', ''),
+    'time_records': api_location('values', ''),
+    'update_ranks': api_location('browser','ranks'),
+    'update_variable': api_location('browser', 'variables'),
+}
+
 
 /** Helper function to return a font height, ascent, and descent in pixels
 */
@@ -242,7 +269,7 @@ $.widget( "fortylines.waveform", $.fortylines.waveWidget, {
 
     update: function(){
         var $this = this;
-        $.getJSON(api_location('values', ''),
+        $.getJSON(responsive_waves_api.time_records,
                   { 'vars': '["' + $this.options.path + '"]',
                     'start_time': $this.options.disp_start_time,
                     'end_time': $this.options.disp_end_time,
@@ -436,7 +463,7 @@ $.widget( "fortylines.waveform", $.fortylines.waveWidget, {
 
             } else if( $.inArray(shape, $this.options.gradShapes) >= 0 ) {
                 /* Values as a color gradient. */
-                console.log('XXX gradient');
+                console.log('XXX not yet implemented: as a color gradient');
             }
         }
     }
@@ -712,6 +739,36 @@ var ObservableVariable = function(path, style, shape) {
                  backgroundColor: this.style()['color'],
                  borderColor: this.style()['color'] };
     }, this);
+
+    /* Subscribe to observables so we can send updates
+       back to the server. */
+    function persist(newVal, id, key) {
+        var data = {};
+        data[key] = newVal;
+        $.ajax({
+            type: "PATCH",
+            url: responsive_waves_api.update_variable + id,
+            data: ko.toJSON(data),
+            datatype: "json",
+            contentType: "application/json; charset=utf-8",
+            success: function(data) {
+                // nothing to be done
+            }
+        }).fail(function(data) {
+            showMessages([
+                "An error occurred while updating a browser variable ("
+                    + data.status + " " + data.statusText
+                    + "). Please accept our apologies."], "danger");
+        });
+    }
+    function makePersist(id, key) {
+        return function(newVal) {
+            persist(newVal, id, key);
+        };
+    }
+
+    this.style.subscribe(makePersist(this.path(), "style"));
+    this.shape.subscribe(makePersist(this.path(), "shape"));
 };
 
 function createBrowseFunc(q) {
@@ -752,33 +809,7 @@ function VCBViewModel(variable_list) {
     }
 
     self.add_variable = function( path, style, shape ) {
-        var obsVariable = new ObservableVariable(path, style, shape)
-
-        /* Subscribe to observables so we can send updates
-           back to the server. */
-        function persist(newVal, id, key) {
-            var data = {};
-            data[key] = newVal;
-            $.ajax({
-                type: "PUT",
-                url: api_location('browser', 'variables/' + id),
-                data: ko.toJSON(data),
-                datatype: "json",
-                contentType: "application/json; charset=utf-8",
-                success: function(data) {
-                    // nothing to be done
-                }
-            });
-        }
-        function makePersist(id, key) {
-            return function(newVal) {
-                persist(newVal, id, key);
-            };
-        }
-
-        obsVariable.style.subscribe(makePersist(obsVariable.path(), "style"));
-        obsVariable.shape.subscribe(makePersist(obsVariable.path(), "shape"));
-        self.variables.push(obsVariable);
+        self.variables.push(new ObservableVariable(path, style, shape));
     }
 
     /* Add rows into the waveform display table for each variable specified
@@ -787,7 +818,7 @@ function VCBViewModel(variable_list) {
 
         self.query.subscribe(function(newValue) {
             // load variables
-            $.getJSON(api_location('variables', ''),
+            $.getJSON(responsive_waves_api.list_variables,
                 { 'q': newValue },
                 function success(data, textStatus, jqXHR) {
                     self.candidates.removeAll()
@@ -797,7 +828,8 @@ function VCBViewModel(variable_list) {
                             variable.path, variable.style, variable.shape));
                     }
                 }).fail(function() {
-                    $('#messages').append('<li class="alert alert-error">"' + $('.browser-panel').attr('id') + '" trace not found.</li>')
+                    showMessages([$('.browser-panel').attr('id')
+                                  + ': trace not found.'], 'danger');
                 });
 
             var li = null;
@@ -838,9 +870,9 @@ function VCBViewModel(variable_list) {
                for( var index = 0; index < self.variables().length; ++index ) {
                    ranks[index] = self.variables()[index].path();
                }
-                $.ajax({
+               $.ajax({
                     type: "PUT",
-                    url: api_location('browser','ranks'),
+                    url: responsive_waves_api.update_ranks,
                     data: ko.toJSON(ranks),
                     datatype: "json",
                     contentType: "application/json; charset=utf-8",
@@ -1067,31 +1099,7 @@ function browserResize(browser, cvm) {
 
 /** XXX This looks like a hack. Still easiest way to get that init code
     setup until we figure out something better. */
-
-function initWaveBrowserWhenDocumentReady(csrf_token) {
-  /* Insert the csrf token into the headers */
-  $(document).ajaxSend(function(event, xhr, settings) {
-    function sameOrigin(url) {
-        // url could be relative or scheme relative or absolute
-        var host = document.location.host; // host + port
-        var protocol = document.location.protocol;
-        var sr_origin = '//' + host;
-        var origin = protocol + sr_origin;
-        // Allow absolute or scheme relative URLs to same origin
-        return (url == origin || url.slice(0, origin.length + 1) == origin + '/') ||
-            (url == sr_origin || url.slice(0, sr_origin.length + 1) == sr_origin + '/') ||
-            // or any other URL that isn't scheme relative or absolute i.e relative.
-            !(/^(\/\/|http:|https:).*/.test(url));
-    }
-    function safeMethod(method) {
-        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-    }
-    if (!safeMethod(settings.type) && sameOrigin(settings.url)) {
-        xhr.setRequestHeader("X-CSRFToken", csrf_token);
-    }
-  });
-
-    var variable_list = {}
+function initWaveBrowserWhenDocumentReady(csrf_token, variable_list) {
     cvm = browserCreate($(".browser-panel"), variable_list);
     ko.applyBindings( cvm );
     cvm.add_wave($(".browser-panel"));
@@ -1104,18 +1112,4 @@ function initWaveBrowserWhenDocumentReady(csrf_token) {
     $(window).resize(function() {
         browserResize($(".browser-panel"), cvm);
     });
-
-    /* XXX We shouldn't have to do this. The list of variables for a browser
-       is loaded at the same time as the page. The values should be loaded
-       from a trigger to add_variable.
-    // load variables
-    $.getJSON(api_location('browser'),
-         {},
-         function success(data, textStatus, jqXHR) {
-          cvm.variables.removeAll()
-          for( i = 0; i < data.length; ++i ) {
-              cvm.add_variable(data[i].path, data[i].style, data[i].shape);
-          }
-    });
-    */
 }

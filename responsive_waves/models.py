@@ -52,7 +52,7 @@ class Variable(models.Model):
     # in request.DATA will reset the style to default.
     style = models.TextField(default="")
     # Display of the variable as Dec, Hex, etc.
-    shape = models.SlugField(default="")
+    shape = models.SlugField(default="", blank=True)
 
     def __unicode__(self):
         return self.path

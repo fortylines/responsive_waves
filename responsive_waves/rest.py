@@ -26,7 +26,7 @@ import json, logging, re
 from rest_framework import serializers
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from rest_framework.generics import UpdateAPIView
+from rest_framework.generics import UpdateAPIView, RetrieveUpdateAPIView
 
 from responsive_waves.models import (VALID_SHAPES, Browser, Variable)
 from responsive_waves.backends import load_variables, load_values
@@ -49,6 +49,8 @@ def browser_from_path(url_path):
 
 class VariableSerializer(serializers.ModelSerializer):
     #pylint: disable=no-init,old-style-class
+
+    shape = serializers.SlugField(required=False)
 
     class Meta:
         model = Variable
@@ -144,41 +146,59 @@ def time_records(request, waveform_id):
                                 start_time, end_time, resolution))
 
 
-@api_view(['PUT'])
-def update_ranks(request, pathname):
-    '''DATA is a list of variable ids. The ordering indicates the new ranks.'''
-    LOGGER.debug('[update_ranks] request.DATA: %s', request.DATA)
-    browser, _ = browser_from_path(pathname)
-    if browser:
-        # XXX If we don't have a browser here, there is nothing to update
-        # in the database.
-        variable_list = Variable.objects.filter(
-            browser=browser, shown=True).order_by('rank')
-        for rank, path in enumerate(request.DATA):
-            this_variable = Variable.objects.get_or_create(
-                path=path, browser=browser, shown=True)
-            LOGGER.info(
-                "[update_ranks] %s from %d to %d",
-                this_variable.id, this_variable.rank, rank)
-            this_variable.rank = rank
-            this_variable.save()
-            variable_list = variable_list.exclude(path=path)
-        if len(variable_list) > 0:
-            # XXX This is not a full ordering, abort
-            raise ValueError
-    return Response("OK")
+class RankAPIView(RetrieveUpdateAPIView):
+    """
+    Update the variables displayed in a waveform browser.
+
+    DEFINITION
+    PUT https://api.fortylines.com/v1/browser/:browser/ranks
+
+    EXAMPLE PARAMETERS
+    [ "board.clock", "board.counter" ]
+
+    EXAMPLE RESPONSE
+    OK
+    """
+
+    model = Browser
+    slug_url_kwarg = 'browser'
+
+    def put(self, request, *args, **kwargs):
+        """
+        DATA is a list of variable ids. The ordering indicates the new ranks.
+        """
+        LOGGER.debug('[update_ranks] request.DATA: %s', request.DATA)
+        browser = self.get_object_or_none()
+        if browser:
+            # XXX If we don't have a browser here, there is nothing to update
+            # in the database.
+            variable_list = Variable.objects.filter(
+                browser=browser, shown=True).order_by('rank')
+            for rank, path in enumerate(request.DATA):
+                this_variable, _ = Variable.objects.get_or_create(
+                    path=path, browser=browser, shown=True)
+                LOGGER.info(
+                    "[update_ranks] %s from %d to %d",
+                    this_variable.id, this_variable.rank, rank)
+                this_variable.rank = rank
+                this_variable.save()
+                variable_list = variable_list.exclude(path=path)
+            if len(variable_list) > 0:
+                # XXX This is not a full ordering, abort
+                raise ValueError
+        return Response("OK")
 
 
 @api_view(['GET'])
 def list_variables(request, waveform_id):
     """
-    Returns the list of variables defined in an waveform.
+    Returns the list of variables defined in a waveform.
 
     DEFINITION
     GET https://api.fortylines.com/v1/variables/{WAVEFORM_ID}
 
     EXAMPLE RESPONSE
-    { [
+    [
         { "path", "",
           "is_leaf: true,
           "shown": true,
@@ -187,7 +207,7 @@ def list_variables(request, waveform_id):
           "shape": "analog"
         },
         ...
-    ] }
+    ]
     """
     top_scope = load_variables(waveform_id)
     # *load_variables* returns a scope tree implemented as a dictionnary

@@ -29,7 +29,7 @@ urls for the REST API of fortylines waveform django app.
 from django.conf.urls import patterns, url
 from responsive_waves.rest import (
     table_of_content, time_records, list_variables, UpdateVariableView,
-    update_ranks)
+    RankAPIView)
 
 urlpatterns = patterns('',
     url(r'^scope/(?P<waveform_id>\S+)/$',
@@ -39,11 +39,10 @@ urlpatterns = patterns('',
     url(r'^values/(?P<waveform_id>\S+)/$',
         time_records, name='responsive_waves_time_records'),
 
-    url(r'^browser/(?P<pathname>\S+)/ranks',
-        update_ranks, name='responsive_waves_update_ranks'),
-    url(r'^browser/(?P<pathname>\S+)/variables/(?P<path>\S+)',
+    url(r'^browser/(?P<browser>\S+)/ranks',
+        RankAPIView.as_view(), name='responsive_waves_update_ranks'),
+    url(r'^browser/(?P<browser>\S+)/variables/(?P<path>\S+)?',
         UpdateVariableView.as_view(), name='responsive_waves_update_variable'),
-
    )
 
 

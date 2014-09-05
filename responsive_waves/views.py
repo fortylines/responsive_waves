@@ -32,8 +32,9 @@ from django.core.context_processors import csrf
 from django.core.urlresolvers import reverse
 from django.http import Http404
 from django import forms
+from django.views.generic import DetailView
 
-from responsive_waves.models import Variable
+from responsive_waves.models import Variable, Browser
 from responsive_waves.utils import (variables_match, variables_root_prefixes,
                             variables_at_scope)
 from responsive_waves.rest import browser_from_path
@@ -42,47 +43,62 @@ from responsive_waves.backends import load_variables
 LOGGER = logging.getLogger(__name__)
 
 
-def browse(request, waveform_id, title='', browser_path=None):
+class BrowseView(DetailView):
     '''
     Returns an HTML5 page that contains the Value-Change-Over-Time
     browser javascript app.
     '''
-    browser, wave_path = browser_from_path(waveform_id)
-    if not title:
-        title = wave_path
-    variables = Variable.objects.filter(
-        browser=browser, shown=True).order_by('rank')
-    serialized_list = []
-    for entry in variables:
-        fields = {}
-        try:
-            fields['style'] = json.loads(entry.style)
-        except ValueError:
-            fields['style'] = {}
-        # If the shape of the waveform is not preset, we will defaults to
-        # "analog" for single bit variables and "hex" for multi-bit variables.
-        if entry.shape:
-            fields['shape'] = entry.shape
-        elif re.match(r'\S+\[\d+:\d+\]', entry.path):
-            fields['shape'] = 'hex'
-        else:
-            fields['shape'] = 'analog'
-        fields['path'] = entry.path
-        fields['id'] = str(entry.pk)
-        serialized_list += [fields]
-    if not browser_path:
-        browser_path = waveform_id
-    context = {
-        'browser_path': browser_path,
-        # This JSON-serialization is a little complicated because we want
-        # a subset of the fields to be encoded together with id but without
-        # the additional model layers.
-        'variable_list': json.dumps(serialized_list),
-        'title': title,
-        'waveform_id':  browser_path
-        }
-    context.update(csrf(request))
-    return render_to_response("responsive_waves/browse.html", context)
+    template_name = 'responsive_waves/browse.html'
+    model = Browser
+    slug_url_kwarg = 'waveform_id'
+
+    def get_queryset(self):
+        queryset = super(BrowseView, self).get_queryset()
+        if not queryset.exists():
+            # Implementation Note:
+            # Despite being a bad pattern, we create a ``Browser`` record
+            # on a GET request here. There does not seem a more natural
+            # place to do it if we want to avoid creating unnecessary browsers
+            # for simulations which do not complete.
+            browser = Browser.objects.create(slug=self.kwargs[self.slug_url_kwarg])
+            queryset = super(BrowseView, self).get_queryset()
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super(BrowseView, self).get_context_data(**kwargs)
+        browser = self.get_object()
+        title = browser.slug
+        variables = Variable.objects.filter(
+            browser=browser, shown=True).order_by('rank')
+        serialized_list = []
+        for entry in variables:
+            fields = {}
+            try:
+                fields['style'] = json.loads(entry.style)
+            except ValueError:
+                fields['style'] = {}
+            # If the shape of the waveform is not preset, we will defaults to
+            # "analog" for single bit variables and "hex" for multi-bit variables.
+            if entry.shape:
+                fields['shape'] = entry.shape
+            elif re.match(r'\S+\[\d+:\d+\]', entry.path):
+                fields['shape'] = 'hex'
+            else:
+                fields['shape'] = 'analog'
+            fields['path'] = entry.path
+            fields['id'] = str(entry.pk)
+            serialized_list += [fields]
+        context.update({
+            'browser_path': browser.slug,
+            # This JSON-serialization is a little complicated because we want
+            # a subset of the fields to be encoded together with id but without
+            # the additional model layers.
+            'variable_list': json.dumps(serialized_list),
+            'title': title,
+            'waveform_id': self.kwargs[self.slug_url_kwarg],
+            })
+        context.update(csrf(self.request))
+        return context
 
 
 #pylint: disable=too-many-arguments,dangerous-default-value
