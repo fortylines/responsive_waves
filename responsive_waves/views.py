@@ -48,25 +48,27 @@ class BrowseView(DetailView):
     Returns an HTML5 page that contains the Value-Change-Over-Time
     browser javascript app.
     '''
-    template_name = 'responsive_waves/browse.html'
     model = Browser
-    slug_url_kwarg = 'waveform_id'
+    slug_url_kwarg = 'waveform'
+    template_name = 'responsive_waves/browse.html'
 
-    def get_queryset(self):
-        queryset = super(BrowseView, self).get_queryset()
-        if not queryset.exists():
+    def get(self, request, *args, **kwargs):
+        try:
+            self.object = self.get_object()
+        except Http404:
             # Implementation Note:
             # Despite being a bad pattern, we create a ``Browser`` record
             # on a GET request here. There does not seem a more natural
             # place to do it if we want to avoid creating unnecessary browsers
             # for simulations which do not complete.
-            browser = Browser.objects.create(slug=self.kwargs[self.slug_url_kwarg])
-            queryset = super(BrowseView, self).get_queryset()
-        return queryset
+            self.object = Browser.objects.create(
+                slug=self.kwargs[self.slug_url_kwarg])
+        context = self.get_context_data(object=self.object)
+        return self.render_to_response(context)
 
     def get_context_data(self, **kwargs):
         context = super(BrowseView, self).get_context_data(**kwargs)
-        browser = self.get_object()
+        browser = self.object
         title = browser.slug
         variables = Variable.objects.filter(
             browser=browser, shown=True).order_by('rank')

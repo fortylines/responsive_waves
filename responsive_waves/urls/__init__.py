@@ -33,6 +33,6 @@ from responsive_waves.views import BrowseView
 urlpatterns = patterns('',
     url(r'^api/', include('responsive_waves.urls.rest')),
 #XXX    url(r'^(?P<waveform_id>[a-zA-Z0-9_\-]+)/$',
-    url(r'^(?P<waveform_id>\S+)/$',
+    url(r'^(?P<waveform>\S+)/$',
         BrowseView.as_view(), name='responsive_waves_browse'),
 )
