@@ -23,6 +23,9 @@
 # ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import json, logging, re
+
+from django.db import transaction
+from django.utils.decorators import method_decorator
 from rest_framework import serializers
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -163,6 +166,7 @@ class RankAPIView(RetrieveUpdateAPIView):
     model = Browser
     slug_url_kwarg = 'browser'
 
+    @method_decorator(transaction.atomic)
     def put(self, request, *args, **kwargs):
         """
         DATA is a list of variable ids. The ordering indicates the new ranks.
