@@ -86,12 +86,12 @@ class UpdateVariableView(UpdateAPIView):
 
 
 @api_view(['GET'])
-def table_of_content(request, wave_path):
+def table_of_content(request, waveform_id):
     '''
     Table of content for a value change (wave) file.
     '''
     if request.method == 'GET':
-        data = load_variables(wave_path)
+        data = load_variables(waveform_id)
         # XXX It is kind of silly. We unserialize the JSON-encoded string
         #     *data* for the response to JSON-encode it again. I haven't
         #     found out how to avoid this (see: rest_framework/response.py:37)
