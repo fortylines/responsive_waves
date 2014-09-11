@@ -18,9 +18,8 @@
     text-align: left;
     padding: 0;
     margin: 0;
-    border: 1px black solid;
     color: rgb(100,255,100);
-    background-color: #000;
+background: transparent;
 
     /* We cut the visibility here, not in the edit-waveforms-panel
        otherwise we end-up with space on the right because we shifted
@@ -57,19 +56,30 @@ div.ui-input-text input.ui-input-text {
     color: rgb(100,255,100);
 }
 
+#var-table > tbody > tr > td {
+    border-bottom: 1px solid #ddd;
+}
+
+.variables-header > .variables-row {
+    height: 50px;
+}
+
+.variables-container > .variables-row {
+    height: 50px;
+}
+
 .variables-panel {
-    position: absolute;
-/* XXX If we do that, the margin is not taken into account    left: 0; */
     display: inline-block;
+    position: absolute;
     width: 250px;
     white-space: normal;
-    z-index: 40 /* edit-panel-visible */;
-
-    background-color: #000;
+    background-color: #272822;
+    z-index: 30;
 }
 
 .variables-container {
-    background-color: black;
+/*    background-color: #272822;*/
+background: transparent;
 }
 
 .variables-edit-tools-container {
@@ -79,28 +89,22 @@ div.ui-input-text input.ui-input-text {
 /* This root div contains the expandable edit tools panel
    and the waveforms panel. */
 .edit-waveforms-panel {
-    position: absolute;
+    position: relative;
     left: 100px; /* 250 - edit_tools_width */
-    z-index: 30 /* edit-panel-hidden */;
-    display: inline-block;
+    display: inline-flex;
     white-space: nowrap;
-    overflow: hidden;
-    background-color: black;
 }
 
 .edit-panel {
-    float: left;
     display: inline-block;
     width: 150px; /* edit_tools_width */
-    white-space: normal;
-    text-align: center;
 }
 
 .waveforms-panel {
     width: 100%;
     display: inline-block;
     white-space: normal;
-    background-color: black;
+    background-color: #272822;
 }
 
 .variable-list-edit-tools {
@@ -110,15 +114,14 @@ div.ui-input-text input.ui-input-text {
 
 /* fixed height such that variable name and waveform align. */
 .tools-timeruler-block {
+    display: inline-block;
     height: 50px;
 }
 
 .var-wave-block {
     height: 50px; /* var_wave_block_height */
-    display: table;
     border-spacing:0;
     border-collapse:collapse;
-    width: 100%;
 }
 
 .var-wave-block div {

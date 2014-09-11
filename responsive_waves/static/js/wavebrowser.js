@@ -1,4 +1,4 @@
-/* Copyright (c) 2012-2014, Fortylines LLC
+/* Copyright (c) 2014, Fortylines LLC
    All rights reserved.
 
    Redistribution and use in source and binary forms, with or without
@@ -325,9 +325,12 @@ $.widget( "fortylines.waveform", $.fortylines.waveWidget, {
         var $this = this,
         disp_start_time = $this.options.disp_start_time,
         disp_end_time = $this.options.disp_end_time,
-        width = $this.options.width,
+        width = $this.element.width(),
         data = $this.options.values,
         shape = $this.options.shape;
+
+        /* Resize the SVG to fill the parent element. */
+        $this.options.svg.attr("width", width);
 
         var strokeStyle = $this.element.css('color'),
         fillStyle = $this.element.css('background-color');
@@ -880,7 +883,9 @@ function VCBViewModel(variable_list) {
                         // nothing to be done
                     }
                 });
+/* XXX
                $(".browser-panel").height($(".browser-panel .variables-panel").height());
+*/
             });
     }
 }
@@ -891,18 +896,17 @@ function browserCreate(browser, variable_list) {
 
     function toggle_tools() {
         var edit_wave_panel = browser.find('.edit-waveforms-panel');
-        var edit_panel = edit_wave_panel.find('.edit-panel');
         var left_pos =  parseInt(edit_wave_panel.css('left'), 10);
         edit_tools_width = 150;
         if( left_pos < 250 ) {
             browser.find('.variables-edit-tools-toggle').text('Done');
             edit_wave_panel.animate({left: '+=' + edit_tools_width }, 500,
-                function() {
-                    edit_wave_panel.css('z-index', 40 /* edit-panel-visible */);
-                });
+                 function() {
+                    edit_wave_panel.css('z-index', 40 /* edit-panel-visible */)
+                 });
         } else {
             browser.find('.variables-edit-tools-toggle').text('Edit');
-            edit_wave_panel.css('z-index', 30 /* edit-panel-hidden */);
+            edit_wave_panel.css('z-index', 0 /* edit-panel-hidden */);
             edit_wave_panel.animate({left: '-=' + edit_tools_width }, 500);
         }
     }
@@ -970,8 +974,8 @@ function updateRankDrop( event, ui ) {
     var $this = $(this)
     var self = cvm;
 
-    var target_index = $this.parent().parent().parent().index();
-    var source_index = ui.draggable.parent().parent().parent().index();
+    var target_index = $this.parents(".variables-row").index();
+    var source_index = ui.draggable.parents(".variables-row").index();
 
     ui.draggable.css('top', '0');
     ui.draggable.css('left', '0');
