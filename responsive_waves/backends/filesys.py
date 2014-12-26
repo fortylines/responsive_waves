@@ -28,8 +28,8 @@ import vcd
 
 from responsive_waves import settings
 
-
 LOGGER = logging.getLogger(__name__)
+BUFFER_SIZE = 4096
 
 
 def _as_abspath(vcd_path, ext=None):
@@ -55,11 +55,17 @@ class VCDFileBackend(object):
         Returns a scope tree (as a python dictionnary) of variables defined
         in *vcd_path*.
         """
+        trace = vcd.Trace([], 0, 0, 1)
         vcd_abspath = _as_abspath(vcd_path, '.vcd')
-        with open(vcd_abspath) as vcd_file:
-            defs = vcd.definitions(vcd_file)
-            return json.loads(defs)['definitions']
-        return None
+        with open(vcd_abspath, 'rb') as vcd_file:
+            buf = vcd_file.read(BUFFER_SIZE)
+            while buf:
+                bytes_used = trace.write(buf)
+                if bytes_used != len(buf):
+                    break
+                buf = vcd_file.read(BUFFER_SIZE)
+        data = str(trace)
+        return json.loads(data)['definitions']
 
     @staticmethod
     def load_values(vcd_path, variables, start_time, end_time, resolution):
@@ -69,14 +75,18 @@ class VCDFileBackend(object):
         '''
         LOGGER.debug("[load_values] %s %s [%ld, %ld[ at %d",
                      vcd_path, variables, start_time, end_time, resolution)
-        data = "{}"
+        trace = vcd.Trace(variables, start_time, end_time, resolution)
         vcd_abspath = _as_abspath(vcd_path, '.vcd')
-        if os.path.exists(vcd_abspath):
-            with open(vcd_abspath) as vcd_file:
-                data = vcd.values(vcd_file, variables,
-                                  start_time, end_time, resolution)
+        with open(vcd_abspath, 'rb') as vcd_file:
+            buf = vcd_file.read(BUFFER_SIZE)
+            while buf:
+                bytes_used = trace.write(buf)
+                if bytes_used != len(buf):
+                    break
+                buf = vcd_file.read(BUFFER_SIZE)
         # XXX It is kind of silly. We unserialize the JSON-encoded string
         #     *data* for the response to JSON-encode it again. I haven't
         #     found out how to avoid this (see: rest_framework/response.py:37)
+        data = str(trace)
         return json.loads(data)
 
