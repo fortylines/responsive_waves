@@ -1,4 +1,4 @@
-# Copyright (c) 2012-2014, Fortylines LLC
+# Copyright (c) 2015, Sebastien Mirolo
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -31,7 +31,7 @@ from django.conf.urls import patterns, include, url
 from responsive_waves.views import BrowseView
 
 urlpatterns = patterns('',
-    url(r'^api/', include('responsive_waves.urls.rest')),
+    url(r'^api/', include('responsive_waves.urls.api')),
 #XXX    url(r'^(?P<waveform_id>[a-zA-Z0-9_\-]+)/$',
     url(r'^(?P<waveform>\S+)/$',
         BrowseView.as_view(), name='responsive_waves_browse'),

@@ -1,4 +1,4 @@
-# Copyright (c) 2012-2014, Fortylines LLC
+# Copyright (c) 2015, Sebastien Mirolo
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -32,12 +32,14 @@ import os
 from django.conf import settings
 
 
-BUILDTOP = getattr(settings, 'BUILDTOP',
-                   os.path.join(settings.BASE_DIR, 'build'))
+_SETTINGS = {
+    'SIMTRACE_STORAGE': os.path.join(settings.BASE_DIR, 'build'),
+    'USE_FIXTURES': False,
+    'WAVEFORM_BACKENDS': ('responsive_waves.backends.filesys.VCDFileBackend',),
+}
+_SETTINGS.update(getattr(settings, 'RESPONSIVE_WAVES', {}))
 
 FIXTURE_DIRS = getattr(settings, 'FIXTURE_DIRS', [])
-
-USE_FIXTURES = getattr(settings, 'USE_FIXTURES', False)
-
-WAVEFORM_BACKENDS = getattr(settings, 'WAVEFORM_BACKENDS',
-                        ('responsive_waves.backends.filesys.VCDFileBackend',))
+SIMTRACE_STORAGE = _SETTINGS.get('SIMTRACE_STORAGE')
+USE_FIXTURES = _SETTINGS.get('USE_FIXTURES')
+WAVEFORM_BACKENDS = _SETTINGS.get('WAVEFORM_BACKENDS')

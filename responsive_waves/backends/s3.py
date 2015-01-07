@@ -1,4 +1,4 @@
-# Copyright (c) 2015, Sebastien Mirolo
+# Copyright (c) 2015, DjaoDjin inc.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -24,6 +24,7 @@
 
 import json, logging, os
 
+import boto
 import vcd
 
 from responsive_waves import settings
@@ -32,43 +33,38 @@ LOGGER = logging.getLogger(__name__)
 BUFFER_SIZE = 4096
 
 
-def _as_abspath(vcd_path, ext=None):
-    '''Returns a pathname to a fixture for a VCD file.'''
-    if ext and not vcd_path.endswith(ext):
-        vcd_path = vcd_path + ext
-    vcd_abspath = os.path.join(settings.SIMTRACE_STORAGE, vcd_path)
-    if not os.path.exists(vcd_abspath):
-        if getattr(settings, 'USE_FIXTURES', False):
-            return os.path.join(settings.FIXTURE_DIRS[0],
-                                os.path.basename(vcd_path))
-    return vcd_abspath
-
-
-class VCDFileBackend(object):
+class VCDS3Backend(object):
 
     def __init__(self):
-        pass
+        self.conn = boto.connect_s3()
+        remote_location = settings.SIMTRACE_STORAGE
+        self.bucket = self.conn.get_bucket(remote_location[5:])
 
     @staticmethod
-    def load_variables(vcd_path):
+    def read(key, start=0):
+        LOGGER.debug("GET [%d, %d] from key %s in S3 bucket %s",
+            start, start + BUFFER_SIZE, key.name, key.bucket)
+        return key.get_contents_as_string(
+            headers={'Content-Range': 'bytes %d-%d/*' % (start, start + BUFFER_SIZE)})
+
+    def load_variables(self, vcd_path):
         """
         Returns a scope tree (as a python dictionnary) of variables defined
         in *vcd_path*.
         """
         trace = vcd.Trace([], 0, 0, 1)
-        vcd_abspath = _as_abspath(vcd_path, '.vcd')
-        with open(vcd_abspath, 'rb') as vcd_file:
-            buf = vcd_file.read(BUFFER_SIZE)
-            while buf:
-                bytes_used = trace.write(buf)
-                if bytes_used != len(buf):
-                    break
-                buf = vcd_file.read(BUFFER_SIZE)
+        key = self.bucket.get_key(vcd_path + '.vcd')
+        bytes_used = 1
+        buf_idx = 0
+        buf = []
+        while buf_idx < key.size and bytes_used != len(buf):
+            buf = self.read(key, start=buf_idx)
+            bytes_used = trace.write(buf)
+            buf_idx += len(buf)
         data = str(trace)
         return json.loads(data)['definitions']
 
-    @staticmethod
-    def load_values(vcd_path, variables, start_time, end_time, resolution):
+    def load_values(self, vcd_path, variables, start_time, end_time, resolution):
         '''
         Returns a json-formatted version of the time records
         for the VCD file pointed by *job_id*/*vcd_path*.
@@ -76,14 +72,14 @@ class VCDFileBackend(object):
         LOGGER.debug("[load_values] %s %s [%ld, %ld[ at %d",
                      vcd_path, variables, start_time, end_time, resolution)
         trace = vcd.Trace(variables, start_time, end_time, resolution)
-        vcd_abspath = _as_abspath(vcd_path, '.vcd')
-        with open(vcd_abspath, 'rb') as vcd_file:
-            buf = vcd_file.read(BUFFER_SIZE)
-            while buf:
-                bytes_used = trace.write(buf)
-                if bytes_used != len(buf):
-                    break
-                buf = vcd_file.read(BUFFER_SIZE)
+        key = self.bucket.get_key(vcd_path + '.vcd')
+        bytes_used = 1
+        buf_idx = 0
+        buf = []
+        while buf_idx < key.size and bytes_used != len(buf):
+            buf = self.read(key, start=buf_idx)
+            bytes_used = trace.write(buf)
+            buf_idx += len(buf)
         # XXX It is kind of silly. We unserialize the JSON-encoded string
         #     *data* for the response to JSON-encode it again. I haven't
         #     found out how to avoid this (see: rest_framework/response.py:37)

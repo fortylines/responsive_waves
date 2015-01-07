@@ -107,8 +107,8 @@ LOGGING = {
         },
     },
     'loggers': {
-        # Might as well log any errors anywhere else in Django
-        'django': {
+        # Might as well log any errors anywhere
+        '': {
             'handlers': ['logfile'],
             'level': 'INFO',
             'propagate': False,

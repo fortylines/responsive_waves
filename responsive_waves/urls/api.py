@@ -1,4 +1,4 @@
-# Copyright (c) 2012-2014, Fortylines LLC
+# Copyright (c) 2015, Sebastien Mirolo
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -23,11 +23,11 @@
 # ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 """
-urls for the REST API of fortylines waveform django app.
+urls for the REST API of responsive_waves django app.
 """
 
 from django.conf.urls import patterns, url
-from responsive_waves.rest import (
+from responsive_waves.api import (
     table_of_content, time_records, list_variables, UpdateVariableView,
     RankAPIView)
 

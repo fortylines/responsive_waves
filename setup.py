@@ -1,4 +1,4 @@
-# Copyright (c) 2012-2014, Fortylines LLC
+# Copyright (c) 2015, Sebastien Mirolo
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -28,8 +28,8 @@ import responsive_waves
 setup(
     name='responsive_waves',
     version=responsive_waves.__version__,
-    author='Fortylines LLC',
-    author_email='support@fortylines.com',
+    author='Sebastien Mirolo',
+    author_email='smirolo@fortylines.com',
     packages=['responsive_waves',
               'responsive_waves.urls',
               'responsive_waves.backends',
