@@ -52,7 +52,13 @@ def get_backends():
     from responsive_waves import settings
     backends = []
     for backend_path in settings.WAVEFORM_BACKENDS:
-        backends.append(load_backend(backend_path))
+        try:
+            backend = load_backend(backend_path)
+            backends.append(backend)
+        except ImproperlyConfigured:
+            raise
+        except Exception as err:
+            LOGGER.warning('Unable to load backend %s: %s', backend_path, err)
     return backends
 
 
