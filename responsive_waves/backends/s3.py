@@ -53,6 +53,7 @@ class VCDS3Backend(object):
         in *vcd_path*.
         """
         trace = vcd.Trace([], 0, 0, 1)
+        LOGGER.debug('GET %s in bucket %s', vcd_path + '.vcd', self.bucket)
         key = self.bucket.get_key(vcd_path + '.vcd')
         bytes_used = 1
         buf_idx = 0
