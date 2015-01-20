@@ -33,13 +33,15 @@ from django.conf import settings
 
 
 _SETTINGS = {
-    'SIMTRACE_STORAGE': os.path.join(settings.BASE_DIR, 'build'),
+    'FILESYS_STORAGE': os.path.join(settings.BASE_DIR, 'build'),
+    'S3_STORAGE': "",
     'USE_FIXTURES': False,
     'WAVEFORM_BACKENDS': ('responsive_waves.backends.filesys.VCDFileBackend',),
 }
 _SETTINGS.update(getattr(settings, 'RESPONSIVE_WAVES', {}))
 
 FIXTURE_DIRS = getattr(settings, 'FIXTURE_DIRS', [])
-SIMTRACE_STORAGE = _SETTINGS.get('SIMTRACE_STORAGE')
+FILESYS_STORAGE = _SETTINGS.get('FILESYS_STORAGE')
+S3_STORAGE = _SETTINGS.get('S3_STORAGE')
 USE_FIXTURES = _SETTINGS.get('USE_FIXTURES')
 WAVEFORM_BACKENDS = _SETTINGS.get('WAVEFORM_BACKENDS')

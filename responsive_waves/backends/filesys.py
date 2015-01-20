@@ -36,7 +36,7 @@ def _as_abspath(vcd_path, ext=None):
     '''Returns a pathname to a fixture for a VCD file.'''
     if ext and not vcd_path.endswith(ext):
         vcd_path = vcd_path + ext
-    vcd_abspath = os.path.join(settings.SIMTRACE_STORAGE, vcd_path)
+    vcd_abspath = os.path.join(settings.FILESYS_STORAGE, vcd_path)
     if not os.path.exists(vcd_abspath):
         if getattr(settings, 'USE_FIXTURES', False):
             return os.path.join(settings.FIXTURE_DIRS[0],

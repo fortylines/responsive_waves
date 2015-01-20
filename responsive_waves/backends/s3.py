@@ -37,7 +37,7 @@ class VCDS3Backend(object):
 
     def __init__(self):
         self.conn = boto.connect_s3()
-        remote_location = settings.SIMTRACE_STORAGE
+        remote_location = settings.S3_STORAGE
         self.bucket = self.conn.get_bucket(remote_location[5:])
 
     @staticmethod
