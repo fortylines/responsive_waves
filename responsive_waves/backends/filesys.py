@@ -39,8 +39,7 @@ def _as_abspath(vcd_path, ext=None):
     vcd_abspath = os.path.join(settings.FILESYS_STORAGE, vcd_path)
     if not os.path.exists(vcd_abspath):
         if getattr(settings, 'USE_FIXTURES', False):
-            return os.path.join(settings.FIXTURE_DIRS[0],
-                                os.path.basename(vcd_path))
+            return os.path.join(settings.FIXTURE_DIRS[0], vcd_path)
     return vcd_abspath
 
 
