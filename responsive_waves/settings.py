@@ -33,6 +33,7 @@ from django.conf import settings
 
 
 _SETTINGS = {
+    'ACCOUNT_MODEL': settings.AUTH_USER_MODEL,
     'FILESYS_STORAGE': os.path.join(settings.BASE_DIR, 'build'),
     'S3_STORAGE': "",
     'USE_FIXTURES': False,
@@ -40,6 +41,7 @@ _SETTINGS = {
 }
 _SETTINGS.update(getattr(settings, 'RESPONSIVE_WAVES', {}))
 
+ACCOUNT_MODEL = _SETTINGS.get('ACCOUNT_MODEL')
 FIXTURE_DIRS = getattr(settings, 'FIXTURE_DIRS', [])
 FILESYS_STORAGE = _SETTINGS.get('FILESYS_STORAGE')
 S3_STORAGE = _SETTINGS.get('S3_STORAGE')

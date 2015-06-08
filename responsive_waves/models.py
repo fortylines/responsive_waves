@@ -29,6 +29,9 @@ import logging
 
 from django.db import models
 
+from responsive_waves import settings
+
+
 LOGGER = logging.getLogger(__name__)
 
 VALID_SHAPES = ['bin', 'oct', 'dec', 'hex',
@@ -64,6 +67,7 @@ class Browser(models.Model):
     """
 
     slug = models.SlugField()
+    account = models.ForeignKey(settings.ACCOUNT_MODEL, null=True)
 
     def __unicode__(self):
         return self.slug

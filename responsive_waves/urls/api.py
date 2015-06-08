@@ -43,6 +43,4 @@ urlpatterns = patterns('',
         RankAPIView.as_view(), name='responsive_waves_update_ranks'),
     url(r'^browser/(?P<browser>\S+)/variables/(?P<path>\S+)?',
         UpdateVariableView.as_view(), name='responsive_waves_update_variable'),
-   )
-
-
+)

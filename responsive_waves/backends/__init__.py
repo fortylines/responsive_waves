@@ -55,10 +55,9 @@ def get_backends():
         try:
             backend = load_backend(backend_path)
             backends.append(backend)
-        except ImproperlyConfigured:
-            raise
-        except Exception as err:
+        except ImproperlyConfigured as err:
             LOGGER.warning('Unable to load backend %s: %s', backend_path, err)
+            raise
     return backends
 
 

@@ -22,7 +22,7 @@
 # OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 # ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import json, logging, os
+import json, logging
 
 import boto
 import vcd
@@ -45,7 +45,8 @@ class VCDS3Backend(object):
         LOGGER.debug("GET [%d, %d] from key %s in S3 bucket %s",
             start, start + BUFFER_SIZE, key.name, key.bucket)
         return key.get_contents_as_string(
-            headers={'Content-Range': 'bytes %d-%d/*' % (start, start + BUFFER_SIZE)})
+            headers={'Content-Range':
+                'bytes %d-%d/*' % (start, start + BUFFER_SIZE)})
 
     def load_variables(self, vcd_path):
         """
@@ -65,7 +66,8 @@ class VCDS3Backend(object):
         data = str(trace)
         return json.loads(data)['definitions']
 
-    def load_values(self, vcd_path, variables, start_time, end_time, resolution):
+    def load_values(self, vcd_path,
+                    variables, start_time, end_time, resolution):
         '''
         Returns a json-formatted version of the time records
         for the VCD file pointed by *job_id*/*vcd_path*.

@@ -80,7 +80,8 @@ class BrowseView(DetailView):
             except ValueError:
                 fields['style'] = {}
             # If the shape of the waveform is not preset, we will defaults to
-            # "analog" for single bit variables and "hex" for multi-bit variables.
+            # "analog" for single bit variables and "hex" for multi-bit
+            # variables.
             if entry.shape:
                 fields['shape'] = entry.shape
             elif re.match(r'\S+\[\d+:\d+\]', entry.path):
