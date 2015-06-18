@@ -32,6 +32,8 @@ setup(
     author_email='smirolo@fortylines.com',
     packages=['responsive_waves',
               'responsive_waves.urls',
+              'responsive_waves.urls.api',
+              'responsive_waves.api',
               'responsive_waves.backends',
               'responsive_waves.templatetags',
               ],
