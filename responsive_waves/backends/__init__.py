@@ -96,3 +96,20 @@ def load_values(waveform_id, variables, start_time, end_time, resolution):
             # did not work, next one.
             continue
     return values
+
+
+def retrieve_log(key):
+    """
+    Returns a log output from its key.
+    """
+    log_content = None
+    for backend in get_backends():
+        try:
+            LOGGER.debug('try backend %s ...', backend.__class__.__name__)
+            log_content = backend.retrieve(key)
+            if log_content:
+                break
+        except (TypeError, IOError):
+            # did not work, next one.
+            continue
+    return log_content

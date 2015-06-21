@@ -26,10 +26,12 @@
 urls for the REST API of responsive_waves django app.
 """
 
-from django.conf.urls import patterns, url, include
+from django.conf.urls import patterns, url
+from responsive_waves.api.browser import UpdateVariableView, RankAPIView
 
 urlpatterns = patterns('',
-    url(r'^', include('responsive_waves.urls.api.wave')),
-    url(r'^browser/', include('responsive_waves.urls.api.browser')),
-    url(r'^logs/', include('responsive_waves.urls.api.logs')),
+    url(r'^(?P<browser>\S+)/ranks',
+        RankAPIView.as_view(), name='responsive_waves_update_ranks'),
+    url(r'^(?P<browser>\S+)/variables/(?P<path>\S+)?',
+        UpdateVariableView.as_view(), name='responsive_waves_update_variable'),
 )

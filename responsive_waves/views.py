@@ -37,7 +37,7 @@ from django.views.generic import DetailView
 from responsive_waves.models import Variable, Browser
 from responsive_waves.utils import (variables_match, variables_root_prefixes,
                             variables_at_scope)
-from responsive_waves.api import browser_from_path
+from responsive_waves.mixins import browser_from_path
 from responsive_waves.backends import load_variables
 
 LOGGER = logging.getLogger(__name__)

@@ -26,10 +26,15 @@
 urls for the REST API of responsive_waves django app.
 """
 
-from django.conf.urls import patterns, url, include
+from django.conf.urls import patterns, url
+from responsive_waves.api.wave import (table_of_content, time_records,
+    list_variables)
 
 urlpatterns = patterns('',
-    url(r'^', include('responsive_waves.urls.api.wave')),
-    url(r'^browser/', include('responsive_waves.urls.api.browser')),
-    url(r'^logs/', include('responsive_waves.urls.api.logs')),
+    url(r'^scope/(?P<waveform_id>\S+)/$',
+        table_of_content, name='responsive_waves_scope'),
+    url(r'^variables/(?P<waveform_id>\S+)/$',
+        list_variables, name='responsive_waves_list_variables'),
+    url(r'^values/(?P<waveform_id>\S+)/$',
+        time_records, name='responsive_waves_time_records'),
 )

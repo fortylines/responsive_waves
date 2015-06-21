@@ -24,9 +24,10 @@
 
 import json, logging, os
 
-import vcd
+from django.conf import settings as django_settings
 
 from responsive_waves import settings
+from responsive_waves.backends.base import BaseTraceBackend
 
 LOGGER = logging.getLogger(__name__)
 BUFFER_SIZE = 4096
@@ -43,18 +44,17 @@ def _as_abspath(vcd_path, ext=None):
     return vcd_abspath
 
 
-class VCDFileBackend(object):
+class VCDFileBackend(BaseTraceBackend):
 
     def __init__(self):
         pass
 
-    @staticmethod
-    def load_variables(vcd_path):
+    def load_variables(self, vcd_path):
         """
         Returns a scope tree (as a python dictionnary) of variables defined
         in *vcd_path*.
         """
-        trace = vcd.Trace([], 0, 0, 1)
+        trace = self.get_trace([], 0, 0, 1)
         vcd_abspath = _as_abspath(vcd_path, '.vcd')
         with open(vcd_abspath, 'rb') as vcd_file:
             buf = vcd_file.read(BUFFER_SIZE)
@@ -66,15 +66,16 @@ class VCDFileBackend(object):
         data = str(trace)
         return json.loads(data)['definitions']
 
-    @staticmethod
-    def load_values(vcd_path, variables, start_time, end_time, resolution):
+    def load_values(self, vcd_path, variables,
+                    start_time, end_time, resolution):
+        #pylint: disable=too-many-arguments
         '''
         Returns a json-formatted version of the time records
         for the VCD file pointed by *job_id*/*vcd_path*.
         '''
         LOGGER.debug("[load_values] %s %s [%ld, %ld[ at %d",
                      vcd_path, variables, start_time, end_time, resolution)
-        trace = vcd.Trace(variables, start_time, end_time, resolution)
+        trace = self.get_trace(variables, start_time, end_time, resolution)
         vcd_abspath = _as_abspath(vcd_path, '.vcd')
         with open(vcd_abspath, 'rb') as vcd_file:
             buf = vcd_file.read(BUFFER_SIZE)
@@ -89,3 +90,15 @@ class VCDFileBackend(object):
         data = str(trace)
         return json.loads(data)
 
+    @staticmethod
+    def retrieve(key):
+        """
+        Return content of a log file (stdout, stderr, etc.)
+        """
+        log_path = os.path.join(django_settings.BUILDTOP, key)
+        if os.path.exists(log_path):
+            with open(log_path, 'r') as log:
+                return log.read()
+        else:
+            LOGGER.warning("%s not found", log_path)
+        return None

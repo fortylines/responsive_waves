@@ -22,14 +22,12 @@
 # OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 # ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-"""
-urls for the REST API of responsive_waves django app.
-"""
+import vcd
 
-from django.conf.urls import patterns, url, include
 
-urlpatterns = patterns('',
-    url(r'^', include('responsive_waves.urls.api.wave')),
-    url(r'^browser/', include('responsive_waves.urls.api.browser')),
-    url(r'^logs/', include('responsive_waves.urls.api.logs')),
-)
+class BaseTraceBackend(object):
+
+    @staticmethod
+    def get_trace(variables, start_time, end_time, resolution):
+        #pylint: disable=no-member
+        return vcd.Trace(variables, start_time, end_time, resolution)

@@ -26,10 +26,13 @@
 urls for the REST API of responsive_waves django app.
 """
 
-from django.conf.urls import patterns, url, include
+from django.conf.urls import patterns, url
+
+from responsive_waves.api.logs import RetrieveLogAPIView, LogListAPIView
 
 urlpatterns = patterns('',
-    url(r'^', include('responsive_waves.urls.api.wave')),
-    url(r'^browser/', include('responsive_waves.urls.api.browser')),
-    url(r'^logs/', include('responsive_waves.urls.api.logs')),
+    url(r'^(?P<key>\S+)',
+        RetrieveLogAPIView.as_view(), name='responsive_waves_api_logs'),
+    url(r'^',
+        LogListAPIView.as_view(), name='responsive_waves_api_log_base'),
 )

@@ -25,15 +25,16 @@
 import json, logging
 
 import boto
-import vcd
 
 from responsive_waves import settings
+from responsive_waves.backends.base import BaseTraceBackend
+
 
 LOGGER = logging.getLogger(__name__)
 BUFFER_SIZE = 4096
 
 
-class VCDS3Backend(object):
+class VCDS3Backend(BaseTraceBackend):
 
     def __init__(self):
         self.conn = boto.connect_s3()
@@ -53,7 +54,7 @@ class VCDS3Backend(object):
         Returns a scope tree (as a python dictionnary) of variables defined
         in *vcd_path*.
         """
-        trace = vcd.Trace([], 0, 0, 1)
+        trace = self.get_trace([], 0, 0, 1)
         LOGGER.debug('GET %s in bucket %s', vcd_path, self.bucket)
         key = self.bucket.get_key(vcd_path)
         bytes_used = 1
@@ -68,13 +69,14 @@ class VCDS3Backend(object):
 
     def load_values(self, vcd_path,
                     variables, start_time, end_time, resolution):
+        #pylint: disable=too-many-arguments
         '''
         Returns a json-formatted version of the time records
         for the VCD file pointed by *job_id*/*vcd_path*.
         '''
         LOGGER.debug("[load_values] %s %s [%ld, %ld[ at %d",
                      vcd_path, variables, start_time, end_time, resolution)
-        trace = vcd.Trace(variables, start_time, end_time, resolution)
+        trace = self.get_trace(variables, start_time, end_time, resolution)
         key = self.bucket.get_key(vcd_path)
         bytes_used = 1
         buf_idx = 0
