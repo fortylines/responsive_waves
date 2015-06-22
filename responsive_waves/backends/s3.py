@@ -36,10 +36,16 @@ BUFFER_SIZE = 4096
 
 class VCDS3Backend(BaseTraceBackend):
 
-    def __init__(self):
-        self.conn = boto.connect_s3()
-        remote_location = settings.S3_STORAGE
-        self.bucket = self.conn.get_bucket(remote_location[5:])
+    @property
+    def bucket(self):
+        # We lazily initialize ``bucket`` instead of doing it
+        # in the constructor to avoid raising exceptions just
+        # on a ``load_backend``.
+        if not hasattr(self, "_bucket"):
+            conn = boto.connect_s3()
+            remote_location = settings.S3_STORAGE
+            self._bucket = conn.get_bucket(remote_location[5:])
+        return self._bucket
 
     @staticmethod
     def read(key, start=0):
