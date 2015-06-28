@@ -31,10 +31,10 @@ from responsive_waves.api.wave import (table_of_content, time_records,
     list_variables)
 
 urlpatterns = patterns('',
-    url(r'^scope/(?P<waveform_id>\S+)/$',
+    url(r'^scope/(?P<key>\S+)/$',
         table_of_content, name='responsive_waves_scope'),
-    url(r'^variables/(?P<waveform_id>\S+)/$',
+    url(r'^variables/(?P<key>\S+)/$',
         list_variables, name='responsive_waves_list_variables'),
-    url(r'^values/(?P<waveform_id>\S+)/$',
+    url(r'^values/(?P<key>\S+)/$',
         time_records, name='responsive_waves_time_records'),
 )

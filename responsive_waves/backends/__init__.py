@@ -61,16 +61,16 @@ def get_backends():
     return backends
 
 
-def load_variables(waveform_id):
+def load_variables(key):
     """
     Returns a scope tree (as a python dictionnary) of variables defined
-    in *waveform_id*.
+    in *key*.
     """
     scope = None
     for backend in get_backends():
         try:
             LOGGER.debug('try backend %s ...', backend.__class__.__name__)
-            scope = backend.load_variables(waveform_id)
+            scope = backend.load_variables(key)
             if scope:
                 break
         except (TypeError, IOError):
@@ -79,7 +79,7 @@ def load_variables(waveform_id):
     return scope
 
 
-def load_values(waveform_id, variables, start_time, end_time, resolution):
+def load_values(key, variables, start_time, end_time, resolution):
     """
     Returns a json-formatted version of the time records
     for the VCD file pointed by *job_id*/*vcd_path*.
@@ -89,7 +89,7 @@ def load_values(waveform_id, variables, start_time, end_time, resolution):
         try:
             LOGGER.debug('try backend %s ...', backend.__class__.__name__)
             values = backend.load_values(
-                waveform_id, variables, start_time, end_time, resolution)
+                key, variables, start_time, end_time, resolution)
             if values:
                 break
         except (TypeError, IOError):

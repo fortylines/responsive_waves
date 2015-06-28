@@ -36,12 +36,12 @@ LOGGER = logging.getLogger(__name__)
 
 
 @api_view(['GET'])
-def table_of_content(request, waveform_id):
+def table_of_content(request, key):
     '''
     Table of content for a value change (wave) file.
     '''
     if request.method == 'GET':
-        data = load_variables(waveform_id)
+        data = load_variables(key)
         # XXX It is kind of silly. We unserialize the JSON-encoded string
         #     *data* for the response to JSON-encode it again. I haven't
         #     found out how to avoid this (see: rest_framework/response.py:37)
@@ -64,12 +64,12 @@ def query_db_variables(variables):
 
 
 @api_view(['GET'])
-def time_records(request, waveform_id):
+def time_records(request, key):
     """
     Returns a list of values for a set of variables defined in an waveform.
 
     DEFINITION
-    GET https://api.fortylines.com/v1/values/{WAVEFORM_ID}
+    GET https://api.fortylines.com/v1/values/{KEY}
 
     EXAMPLE PARAMETERS
     { "vars": [ "board.clock" ],
@@ -92,17 +92,17 @@ def time_records(request, waveform_id):
     start_time = _as_validated_long(request, 'start_time', 0)
     end_time = _as_validated_long(request, 'end_time', 1000)
     resolution = _as_validated_long(request, 'res', 1)
-    return Response(load_values(waveform_id, variables,
+    return Response(load_values(key, variables,
                                 start_time, end_time, resolution))
 
 
 @api_view(['GET'])
-def list_variables(request, waveform_id):
+def list_variables(request, key):
     """
     Returns the list of variables defined in a waveform.
 
     DEFINITION
-    GET https://api.fortylines.com/v1/variables/{WAVEFORM_ID}
+    GET https://api.fortylines.com/v1/variables/{KEY}
 
     EXAMPLE RESPONSE
     [
@@ -116,7 +116,7 @@ def list_variables(request, waveform_id):
         ...
     ]
     """
-    top_scope = load_variables(waveform_id)
+    top_scope = load_variables(key)
     # *load_variables* returns a scope tree implemented as a dictionnary
     # of <string: dict> and <string: string>.
     # Each <string: dict> is a scoped module which associates the name
@@ -140,7 +140,7 @@ def list_variables(request, waveform_id):
     # *variables_match* returns a list of Variable object whose full path
     # from the root matches the *query* regular expression.
 
-    browser, _ = browser_from_path(waveform_id)
+    browser, _ = browser_from_path(key)
     if browser:
         decorated_variables = []
         for variable in query_variables:
