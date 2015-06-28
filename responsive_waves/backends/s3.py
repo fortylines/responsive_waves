@@ -60,6 +60,8 @@ class VCDS3Backend(BaseTraceBackend):
         Returns a scope tree (as a python dictionnary) of variables defined
         in *vcd_path*.
         """
+        if not vcd_path.endswith('.vcd'):
+            vcd_path += '.vcd'
         trace = self.get_trace([], 0, 0, 1)
         LOGGER.debug('GET %s in bucket %s', vcd_path, self.bucket)
         key = self.bucket.get_key(vcd_path)
@@ -80,6 +82,8 @@ class VCDS3Backend(BaseTraceBackend):
         Returns a json-formatted version of the time records
         for the VCD file pointed by *job_id*/*vcd_path*.
         '''
+        if not vcd_path.endswith('.vcd'):
+            vcd_path += '.vcd'
         LOGGER.debug("[load_values] %s %s [%ld, %ld[ at %d",
                      vcd_path, variables, start_time, end_time, resolution)
         trace = self.get_trace(variables, start_time, end_time, resolution)
@@ -97,3 +101,9 @@ class VCDS3Backend(BaseTraceBackend):
         data = str(trace)
         return json.loads(data)
 
+    def retrieve(self, key_name):
+        """
+        Return content of a log file (stdout, stderr, etc.)
+        """
+        key = self.bucket.get_key(key_name)
+        return key.get_contents_as_string()
