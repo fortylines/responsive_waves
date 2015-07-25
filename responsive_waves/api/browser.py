@@ -97,22 +97,20 @@ class RankAPIView(RetrieveUpdateAPIView):
         DATA is a list of variable ids. The ordering indicates the new ranks.
         """
         LOGGER.debug('[update_ranks] request.DATA: %s', request.DATA)
-        browser = self.get_object_or_none()
-        if browser:
-            # XXX If we don't have a browser here, there is nothing to update
-            # in the database.
-            variable_list = Variable.objects.filter(
-                browser=browser, shown=True).order_by('rank')
-            for rank, path in enumerate(request.DATA):
-                this_variable, _ = Variable.objects.get_or_create(
-                    path=path, browser=browser, shown=True)
-                LOGGER.info(
-                    "[update_ranks] %s from %d to %d",
-                    this_variable.id, this_variable.rank, rank)
-                this_variable.rank = rank
-                this_variable.save()
-                variable_list = variable_list.exclude(path=path)
-            if len(variable_list) > 0:
-                # XXX This is not a full ordering, abort
-                raise ValueError
+        browser = self.get_object()
+        # will throw a 404 if we cannot find a borwser to update.
+        variable_list = Variable.objects.filter(
+            browser=browser, shown=True).order_by('rank')
+        for rank, path in enumerate(request.DATA):
+            this_variable, _ = Variable.objects.get_or_create(
+                path=path, browser=browser, shown=True)
+            LOGGER.info(
+                "[update_ranks] %s from %d to %d",
+                this_variable.id, this_variable.rank, rank)
+            this_variable.rank = rank
+            this_variable.save()
+            variable_list = variable_list.exclude(path=path)
+        if len(variable_list) > 0:
+            # XXX This is not a full ordering, abort
+            raise ValueError
         return Response("OK")
