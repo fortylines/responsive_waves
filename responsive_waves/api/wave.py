@@ -24,6 +24,7 @@
 
 import json, logging, re
 
+from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
@@ -123,7 +124,8 @@ def list_variables(request, key):
     # of the module to the variables defined in that module. The definition
     # is recusive.
 
-    query = request.GET.get('q', None)
+    query_param = request.GET.get('q', None)
+    query = query_param
     if not query:
         # No query, we return no results.
         query = r'^$'
@@ -135,7 +137,12 @@ def list_variables(request, key):
                 % {'node_sep': NODE_SEP})
     if query.startswith(NODE_SEP):
         query = query[1:]
-    query_variables = variables_match(query, top_scope)
+    try:
+        query_variables = variables_match(query, top_scope)
+    except re.error:
+        return Response({'details':
+            "r'%s' is not a valid Perl-like regular expression" % query_param},
+            status.HTTP_404_NOT_FOUND)
 
     # *variables_match* returns a list of Variable object whose full path
     # from the root matches the *query* regular expression.

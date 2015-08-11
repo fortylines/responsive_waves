@@ -25,6 +25,8 @@
 import json, logging
 
 import boto
+from boto.exception import S3ResponseError
+from django.http import Http404
 
 from responsive_waves import settings
 from responsive_waves.backends.base import BaseTraceBackend
@@ -44,7 +46,10 @@ class VCDS3Backend(BaseTraceBackend):
         if not hasattr(self, "_bucket"):
             conn = boto.connect_s3()
             remote_location = settings.S3_STORAGE
-            self._bucket = conn.get_bucket(remote_location[5:])
+            try:
+                self._bucket = conn.get_bucket(remote_location[5:])
+            except S3ResponseError, err:
+                raise Http404(err)
         return self._bucket
 
     @staticmethod

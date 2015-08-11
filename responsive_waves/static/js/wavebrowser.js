@@ -830,9 +830,14 @@ function VCBViewModel(variable_list) {
                         self.candidates.push(new ObservableVariable(
                             variable.path, variable.style, variable.shape));
                     }
-                }).fail(function() {
-                    showMessages([$('.browser-panel').attr('id')
-                                  + ': trace not found.'], 'danger');
+                }).fail(function(data) {
+                    if('details' in data.responseJSON) {
+                        showMessages(
+                            [data.responseJSON.details], 'danger');
+                    } else {
+                        showMessages([$('.browser-panel').attr('id')
+                                  + ': not found.'], 'danger');
+                    }
                 });
 
             var li = null;

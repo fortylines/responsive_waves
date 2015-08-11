@@ -1,3 +1,5 @@
+{% load static from staticfiles %}
+
 <div id="variables_list">
   <div class="navbar">
     <div class="container">
@@ -167,20 +169,20 @@
               <a href="#" class="btn-edit-shape"
                  data-bind="click: updateShapeClick">
                 <img class="btn btn-default btn-img-box"
-                     src="/static/img/glyphicons_030_pencil.png" />
+                     src="{% static 'img/glyphicons_030_pencil.png' %}" />
               </a>
             </div>
             <div>
               <a href="#" class="btn-edit-color"
                  data-bind="click: updateColorClick">
                 <img class="btn btn-default btn-img-box"
-                     src="/static/img/glyphicons_090_eyedropper.png" />
+                     src="{% static 'img/glyphicons_090_eyedropper.png' %}" />
               </a>
             </div>
             <div>
               <a class="btn-edit-list" data-bind="draggable: { revert: 'invalid' }, droppable: { accept: '.btn-edit-list', drop: updateRankDrop}">
                 <img class="btn btn-default btn-img-box"
-                     src="/static/img/glyphicons_114_list.png" />
+                     src="{% static 'img/glyphicons_114_list.png' %}" />
               </a>
             </div>
         </div>

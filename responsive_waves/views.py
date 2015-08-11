@@ -61,6 +61,7 @@ class BrowseView(DetailView):
             # on a GET request here. There does not seem a more natural
             # place to do it if we want to avoid creating unnecessary browsers
             # for simulations which do not complete.
+            # XXX Need an account to create a ``Browser``
             self.object = Browser.objects.create(
                 slug=self.kwargs[self.slug_url_kwarg])
         context = self.get_context_data(object=self.object)
