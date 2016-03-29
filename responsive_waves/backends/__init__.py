@@ -1,4 +1,4 @@
-# Copyright (c) 2015, Sebastien Mirolo
+# Copyright (c) 2016, Sebastien Mirolo
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -23,9 +23,10 @@
 # ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import logging
+from importlib import import_module
 
 from django.core.exceptions import ImproperlyConfigured
-from django.utils.importlib import import_module
+
 
 LOGGER = logging.getLogger(__name__)
 
