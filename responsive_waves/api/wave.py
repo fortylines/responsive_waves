@@ -129,12 +129,11 @@ def list_variables(request, key):
     if not query:
         # No query, we return no results.
         query = r'^$'
-        if False:
-            # Alternative: return variables defined at the toplevel
-            # when no scope is specified.
-            query = (
-                r'^[^%(node_sep)s]+%(node_sep)s[^%(node_sep)s]+%(node_sep)s?$'
-                % {'node_sep': NODE_SEP})
+        # Alternative: return variables defined at the toplevel
+        # when no scope is specified.
+        #   query = (
+        #        r'^[^%(node_sep)s]+%(node_sep)s[^%(node_sep)s]+%(node_sep)s?$'
+        #        % {'node_sep': NODE_SEP})
     if query.startswith(NODE_SEP):
         query = query[1:]
     try:

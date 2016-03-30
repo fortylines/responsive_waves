@@ -63,7 +63,7 @@ class BrowseView(DetailView):
             # for simulations which do not complete.
             # XXX Need an account to create a ``Browser``
             self.object = Browser.objects.create(
-                slug=self.kwargs[self.slug_url_kwarg])
+                slug=self.kwargs.get(self.slug_url_kwarg))
         context = self.get_context_data(object=self.object)
         return self.render_to_response(context)
 
@@ -99,7 +99,7 @@ class BrowseView(DetailView):
             # the additional model layers.
             'variable_list': json.dumps(serialized_list),
             'title': title,
-            'waveform_id': self.kwargs[self.slug_url_kwarg],
+            'waveform_id': self.kwargs.get(self.slug_url_kwarg),
             })
         context.update(csrf(self.request))
         return context
