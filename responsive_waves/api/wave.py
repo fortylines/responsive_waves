@@ -1,4 +1,4 @@
-# Copyright (c) 2015, Sebastien Mirolo
+# Copyright (c) 2016, Sebastien Mirolo
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -51,7 +51,7 @@ def table_of_content(request, key):
 
 def _as_validated_long(request, name, default):
     try:
-        return long(request.REQUEST.get(name, default))
+        return long(request.data.get(name, default))
     except ValueError:
         return default
 
@@ -87,7 +87,7 @@ def time_records(request, key):
         ...
     ] }
     """
-    variables = json.loads(request.REQUEST.get('vars', "[]"))
+    variables = json.loads(request.data.get('vars', "[]"))
     if not isinstance(variables, list):
         raise ValueError
     start_time = _as_validated_long(request, 'start_time', 0)
