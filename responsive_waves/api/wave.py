@@ -51,7 +51,7 @@ def table_of_content(request, key):
 
 def _as_validated_long(request, name, default):
     try:
-        return long(request.data.get(name, default))
+        return long(request.GET.get(name, default))
     except ValueError:
         return default
 
@@ -87,7 +87,7 @@ def time_records(request, key):
         ...
     ] }
     """
-    variables = json.loads(request.data.get('vars', "[]"))
+    variables = json.loads(request.GET.get('vars', "[]"))
     if not isinstance(variables, list):
         raise ValueError
     start_time = _as_validated_long(request, 'start_time', 0)
