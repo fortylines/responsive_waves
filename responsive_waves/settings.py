@@ -35,7 +35,7 @@ from django.conf import settings
 _SETTINGS = {
     'ACCOUNT_MODEL': settings.AUTH_USER_MODEL,
     'FILESYS_STORAGE': os.path.join(settings.BASE_DIR, 'build'),
-    'S3_STORAGE': "",
+    'S3_STORAGE': None,
     'USE_FIXTURES': False,
     'WAVEFORM_BACKENDS': ('responsive_waves.backends.filesys.VCDFileBackend',),
 }

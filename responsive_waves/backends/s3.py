@@ -1,4 +1,4 @@
-# Copyright (c) 2015, Sebastien Mirolo
+# Copyright (c) 2016, Sebastien Mirolo
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -44,6 +44,8 @@ class VCDS3Backend(BaseTraceBackend):
         # in the constructor to avoid raising exceptions just
         # on a ``load_backend``.
         if not hasattr(self, "_bucket"):
+            if settings.S3_STORAGE is None:
+                raise IOError("S3_STORAGE should not be None (ex: s3://bucket)")
             conn = boto.connect_s3()
             remote_location = settings.S3_STORAGE
             try:
