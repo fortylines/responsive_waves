@@ -1,4 +1,4 @@
-# Copyright (c) 2016, Sebastien Mirolo
+# Copyright (c) 2017, Sebastien Mirolo
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -54,6 +54,13 @@ class VCDS3Backend(BaseTraceBackend):
                 raise Http404(err)
         return self._bucket
 
+    def get_key(self, key_name):
+        key = self.bucket.get_key(key_name)
+        if key is None:
+            LOGGER.warning("'%s' not found", key_name)
+            raise KeyError(key)
+        return key
+
     @staticmethod
     def read(key, start=0):
         LOGGER.debug("GET [%d, %d] from key %s in S3 bucket %s",
@@ -71,7 +78,7 @@ class VCDS3Backend(BaseTraceBackend):
             vcd_path += '.vcd'
         trace = self.get_trace([], 0, 0, 1)
         LOGGER.debug('GET %s in bucket %s', vcd_path, self.bucket)
-        key = self.bucket.get_key(vcd_path)
+        key = self.get_key(vcd_path)
         bytes_used = 1
         buf_idx = 0
         buf = []
@@ -94,7 +101,7 @@ class VCDS3Backend(BaseTraceBackend):
         LOGGER.debug("[load_values] %s %s [%ld, %ld[ at %d",
                      vcd_path, variables, start_time, end_time, resolution)
         trace = self.get_trace(variables, start_time, end_time, resolution)
-        key = self.bucket.get_key(vcd_path)
+        key = self.get_key(vcd_path)
         bytes_used = 1
         buf_idx = 0
         buf = []
@@ -112,5 +119,5 @@ class VCDS3Backend(BaseTraceBackend):
         """
         Return content of a log file (stdout, stderr, etc.)
         """
-        key = self.bucket.get_key(key_name)
+        key = self.get_key(key_name)
         return key.get_contents_as_string()
