@@ -1,4 +1,4 @@
-# Copyright (c) 2015, Sebastien Mirolo
+# Copyright (c) 2017, Sebastien Mirolo
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -22,11 +22,19 @@
 # OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 # ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-"""Functions to filter variable sets."""
+"""
+Functions to filter sets of ``Variable``.
+"""
+
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
 import logging, re
 
-from responsive_waves.models import Variable
+from django.utils import six
+
+from .models import Variable
+
 
 LOGGER = logging.getLogger(__name__)
 
@@ -40,7 +48,7 @@ def paths_from_scope(scope, prefix=''):
     as a recursive dictionary of strings.
     """
     results = []
-    for name, value in scope.iteritems():
+    for name, value in six.iteritems(scope):
         if prefix:
             full_path = prefix + NODE_SEP + name
         else:
@@ -59,7 +67,7 @@ def scope_filter(left, right):
     """
     if isinstance(left, dict) and isinstance(right, dict):
         scope = {}
-        for key in right.keys():
+        for key in six.iterkeys(right):
             if key in left:
                 scope[key] = scope_filter(left[key], right[key])
         return scope
@@ -73,12 +81,12 @@ def variables_full_path(scope, prefix=''):
     given a tree of scopes and variables.
     """
     results = []
-    for name, value in scope.iteritems():
+    for name, value in six.iteritems(scope):
         if prefix:
             full_path = prefix + NODE_SEP + name
         else:
             full_path = name
-        if isinstance(value, basestring):
+        if isinstance(value, six.string_types):
             results += [Variable(path=full_path, is_leaf=True)]
         else:
             results += variables_full_path(value, full_path)
@@ -92,12 +100,12 @@ def variables_at_scope(scope, prefix=''):
     if prefix:
         for root in prefix.split(NODE_SEP):
             scope = scope[root]
-    for name, value in scope.iteritems():
+    for name, value in six.iteritems(scope):
         if prefix:
             fullpath = prefix + NODE_SEP + name
         else:
             fullpath = name
-        is_leaf = isinstance(value, basestring)
+        is_leaf = isinstance(value, six.string_types)
         fullpath_variable_list += [Variable(path=fullpath, is_leaf=is_leaf)]
     return fullpath_variable_list
 
@@ -125,14 +133,14 @@ def variables_as_scope(variable_list):
 
 def leafs(scope, prefix=""):
     results = {}
-    for name, value in scope.iteritems():
+    for name, value in six.iteritems(scope):
         if prefix:
             qualified_path = prefix + NODE_SEP + name
         else:
             qualified_path = name
         if isinstance(value, dict):
             next_leafs = leafs(value, qualified_path)
-            for next_name, next_value in next_leafs.iteritems():
+            for next_name, next_value in six.iteritems(next_leafs):
                 if next_name in results:
                     results[next_name].append(next_value)
                 else:

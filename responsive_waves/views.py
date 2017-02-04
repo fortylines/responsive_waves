@@ -1,4 +1,4 @@
-# Copyright (c) 2015, Sebastien Mirolo
+# Copyright (c) 2017, Sebastien Mirolo
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -22,23 +22,27 @@
 # OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 # ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-'''Dynamic pages for browsing VCD files.'''
+"""
+Dynamic pages for browsing VCD files.
+"""
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
 import json, logging, os, re
 
-from django.views.decorators.http import require_GET, require_POST
-from django.shortcuts import redirect, render_to_response
-from django.core.context_processors import csrf
+from django import forms
 from django.core.urlresolvers import reverse
 from django.http import Http404
-from django import forms
+from django.shortcuts import redirect, render_to_response
+from django.template.context_processors import csrf
+from django.views.decorators.http import require_GET, require_POST
 from django.views.generic import DetailView
 
-from responsive_waves.models import Variable, Browser
-from responsive_waves.utils import (variables_match, variables_root_prefixes,
+from .models import Variable, Browser
+from .utils import (variables_match, variables_root_prefixes,
                             variables_at_scope)
-from responsive_waves.mixins import browser_from_path
-from responsive_waves.backends import load_variables
+from .mixins import browser_from_path
+from .backends import load_variables
 
 LOGGER = logging.getLogger(__name__)
 

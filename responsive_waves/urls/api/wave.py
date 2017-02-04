@@ -1,4 +1,4 @@
-# Copyright (c) 2015, Sebastien Mirolo
+# Copyright (c) 2017, Sebastien Mirolo
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -26,15 +26,15 @@
 urls for the REST API of responsive_waves django app.
 """
 
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 from responsive_waves.api.wave import (table_of_content, time_records,
     list_variables)
 
-urlpatterns = patterns('',
+urlpatterns = [
     url(r'^scope/(?P<key>\S+)/$',
         table_of_content, name='responsive_waves_scope'),
     url(r'^variables/(?P<key>\S+)/$',
         list_variables, name='responsive_waves_list_variables'),
     url(r'^values/(?P<key>\S+)/$',
         time_records, name='responsive_waves_time_records'),
-)
+]

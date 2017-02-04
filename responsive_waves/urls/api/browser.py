@@ -1,4 +1,4 @@
-# Copyright (c) 2015, Sebastien Mirolo
+# Copyright (c) 2017, Sebastien Mirolo
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -26,12 +26,12 @@
 urls for the REST API of responsive_waves django app.
 """
 
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 from responsive_waves.api.browser import UpdateVariableView, RankAPIView
 
-urlpatterns = patterns('',
+urlpatterns = [
     url(r'^(?P<browser>\S+)/ranks',
         RankAPIView.as_view(), name='responsive_waves_update_ranks'),
     url(r'^(?P<browser>\S+)/variables/(?P<path>\S+)?',
         UpdateVariableView.as_view(), name='responsive_waves_update_variable'),
-)
+]

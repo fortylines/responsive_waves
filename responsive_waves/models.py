@@ -1,4 +1,4 @@
-# Copyright (c) 2015, Sebastien Mirolo
+# Copyright (c) 2017, Sebastien Mirolo
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -22,14 +22,19 @@
 # OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 # ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-""" This module supplies the data model for the wave browser interface,
-    well really, it just gives convenience routines for view.py """
+"""
+This module supplies the data model for the wave browser interface,
+well really, it just gives convenience routines for view.py
+"""
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
 import logging
 
 from django.db import models
+from django.utils.encoding import python_2_unicode_compatible
 
-from responsive_waves import settings
+from . import settings
 
 
 LOGGER = logging.getLogger(__name__)
@@ -39,6 +44,7 @@ VALID_SHAPES = ['bin', 'oct', 'dec', 'hex',
                 'bin-rev', 'oct-rev', 'dec-rev', 'hex-rev',
                 'analog', 'gradient']
 
+@python_2_unicode_compatible
 class Variable(models.Model):
     """
     Display option for a variable.
@@ -57,10 +63,11 @@ class Variable(models.Model):
     # Display of the variable as Dec, Hex, etc.
     shape = models.SlugField(default="", blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.path
 
 
+@python_2_unicode_compatible
 class Browser(models.Model):
     """
     A set of variables displayed together.
@@ -69,6 +76,6 @@ class Browser(models.Model):
     slug = models.SlugField()
     account = models.ForeignKey(settings.ACCOUNT_MODEL, null=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.slug
 

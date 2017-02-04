@@ -1,4 +1,4 @@
-# Copyright (c) 2015, Sebastien Mirolo
+# Copyright (c) 2017, Sebastien Mirolo
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -31,7 +31,8 @@ binDir        ?= $(installTop)/bin
 PYTHON        := $(binDir)/python
 
 install::
-	cd $(srcDir) && $(PYTHON) ./setup.py install --quiet
+	cd $(srcDir) && $(PYTHON) ./setup.py --quiet \
+		build -b $(CURDIR)/build install
 
 initdb:
 	-rm -f db.sqlite3

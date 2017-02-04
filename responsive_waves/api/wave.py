@@ -21,19 +21,27 @@
 # WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
 # OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 # ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
 import json, logging, re
 
+from django.utils import six
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from responsive_waves.models import Variable
-from responsive_waves.backends import load_variables, load_values
-from responsive_waves.mixins import browser_from_path
-from responsive_waves.utils import NODE_SEP, variables_match
+from ..models import Variable
+from ..backends import load_variables, load_values
+from ..mixins import browser_from_path
+from ..utils import NODE_SEP, variables_match
 
 LOGGER = logging.getLogger(__name__)
+
+if six.PY3:
+    LONG = int
+else:
+    LONG = long
 
 
 @api_view(['GET'])
@@ -51,7 +59,7 @@ def table_of_content(request, key):
 
 def _as_validated_long(request, name, default):
     try:
-        return long(request.GET.get(name, default))
+        return LONG(request.GET.get(name, default))
     except ValueError:
         return default
 

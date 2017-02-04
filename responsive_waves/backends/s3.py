@@ -50,7 +50,7 @@ class VCDS3Backend(BaseTraceBackend):
             remote_location = settings.S3_STORAGE
             try:
                 self._bucket = conn.get_bucket(remote_location[5:])
-            except S3ResponseError, err:
+            except S3ResponseError as err:
                 raise Http404(err)
         return self._bucket
 

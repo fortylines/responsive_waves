@@ -1,4 +1,4 @@
-# Copyright (c) 2015, Sebastien Mirolo
+# Copyright (c) 2017, Sebastien Mirolo
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -26,12 +26,12 @@
 urls to interactively browse simulation traces as waveforms.
 """
 
-from django.conf.urls import patterns, include, url
+from django.conf.urls import include, url
 
 from responsive_waves.views import BrowseView
 
-urlpatterns = patterns('',
+urlpatterns = [
     url(r'^api/', include('responsive_waves.urls.api')),
     url(r'^(?P<waveform>\S+)/$',
         BrowseView.as_view(), name='responsive_waves_browse'),
-)
+]

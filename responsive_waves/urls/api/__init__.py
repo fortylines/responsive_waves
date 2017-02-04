@@ -1,4 +1,4 @@
-# Copyright (c) 2015, Sebastien Mirolo
+# Copyright (c) 2017, Sebastien Mirolo
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -26,10 +26,10 @@
 urls for the REST API of responsive_waves django app.
 """
 
-from django.conf.urls import patterns, url, include
+from django.conf.urls import url, include
 
-urlpatterns = patterns('',
+urlpatterns = [
     url(r'^', include('responsive_waves.urls.api.wave')),
     url(r'^browser/', include('responsive_waves.urls.api.browser')),
     url(r'^logs/', include('responsive_waves.urls.api.logs')),
-)
+]
