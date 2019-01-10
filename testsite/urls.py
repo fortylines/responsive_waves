@@ -1,4 +1,4 @@
-# Copyright (c) 2015, Sebastien Mirolo
+# Copyright (c) 2019, Sebastien Mirolo
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -22,12 +22,12 @@
 # OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 # ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from django.conf.urls import patterns, include, url
+from django.conf.urls import include, url
 from django.views.generic.base import RedirectView
 from django.core.urlresolvers import reverse_lazy
 
-urlpatterns = patterns('',
+urlpatterns = [
     url(r'^', include('responsive_waves.urls')),
     url(r'^$', RedirectView.as_view(
             url=reverse_lazy('responsive_waves_browse', args=('board',)))),
-)
+]
