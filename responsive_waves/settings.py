@@ -1,4 +1,4 @@
-# Copyright (c) 2015, Sebastien Mirolo
+# Copyright (c) 2019, Sebastien Mirolo
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -35,15 +35,18 @@ from django.conf import settings
 _SETTINGS = {
     'ACCOUNT_MODEL': settings.AUTH_USER_MODEL,
     'FILESYS_STORAGE': os.path.join(settings.BASE_DIR, 'build'),
+    'FIXTURE_DIRS': [],
     'S3_STORAGE': None,
     'USE_FIXTURES': False,
+    'VCD2JSON_BIN': getattr(settings, 'VCD2JSON_BIN', 'vcd2json'),
     'WAVEFORM_BACKENDS': ('responsive_waves.backends.filesys.VCDFileBackend',),
 }
 _SETTINGS.update(getattr(settings, 'RESPONSIVE_WAVES', {}))
 
 ACCOUNT_MODEL = _SETTINGS.get('ACCOUNT_MODEL')
-FIXTURE_DIRS = getattr(settings, 'FIXTURE_DIRS', [])
+FIXTURE_DIRS = _SETTINGS.get('FIXTURE_DIRS')
 FILESYS_STORAGE = _SETTINGS.get('FILESYS_STORAGE')
 S3_STORAGE = _SETTINGS.get('S3_STORAGE')
 USE_FIXTURES = _SETTINGS.get('USE_FIXTURES')
+VCD2JSON_BIN = _SETTINGS.get('VCD2JSON_BIN')
 WAVEFORM_BACKENDS = _SETTINGS.get('WAVEFORM_BACKENDS')

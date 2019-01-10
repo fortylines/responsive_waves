@@ -1,4 +1,4 @@
-# Copyright (c) 2015, Sebastien Mirolo
+# Copyright (c) 2019, Sebastien Mirolo
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -39,7 +39,7 @@ class RetrieveLogAPIView(RetrieveAPIView):
         log_key = self.kwargs.get('key')
         sep = log_key.find('/')
         job_id = log_key[:sep] if sep else None
-        log_content = backends.retrieve_log(log_key)
+        log_content = backends.retrieve_key(log_key)
         if log_content and log_key.endswith(".simwrap"):
             for output in log_content.splitlines():
                 if re.match(r".*\.vcd", output):

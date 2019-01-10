@@ -1,4 +1,4 @@
-# Copyright (c) 2015, Sebastien Mirolo
+# Copyright (c) 2019, Sebastien Mirolo
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -22,7 +22,28 @@
 # OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 # ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import vcd
+import logging, subprocess
+
+from responsive_waves import settings
+
+LOGGER = logging.getLogger(__name__)
+
+
+class _TraceProc(object):
+
+    def __init__(self, proc):
+        self.proc = proc
+        self.out_text = ""
+        self.err_text = ""
+
+    def __str__(self):
+        self.proc.stdin.close()
+        output_text = self.proc.stdout.read()
+        return output_text.decode('utf-8')
+
+    def write(self, buf):
+        bytes_used = self.proc.stdin.write(buf)
+        return bytes_used
 
 
 class BaseTraceBackend(object):
@@ -30,4 +51,9 @@ class BaseTraceBackend(object):
     @staticmethod
     def get_trace(variables, start_time, end_time, resolution):
         #pylint: disable=no-member
-        return vcd.Trace(variables, start_time, end_time, resolution)
+        cmdline = [settings.VCD2JSON_BIN,
+            '-s', str(start_time), '-e', str(end_time), '-r', str(resolution)]
+        for var in variables:
+            cmdline += ['-n', var]
+        return _TraceProc(subprocess.Popen(cmdline, stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE))

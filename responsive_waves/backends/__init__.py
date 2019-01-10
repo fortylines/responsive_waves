@@ -1,4 +1,4 @@
-# Copyright (c) 2016, Sebastien Mirolo
+# Copyright (c) 2019, Sebastien Mirolo
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -99,7 +99,7 @@ def load_values(key, variables, start_time, end_time, resolution):
     return values
 
 
-def retrieve_log(key):
+def retrieve_key(key):
     """
     Returns a log output from its key.
     """

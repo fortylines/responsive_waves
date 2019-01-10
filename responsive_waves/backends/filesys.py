@@ -1,4 +1,4 @@
-# Copyright (c) 2015, Sebastien Mirolo
+# Copyright (c) 2019, Sebastien Mirolo
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -95,10 +95,11 @@ class VCDFileBackend(BaseTraceBackend):
         """
         Return content of a log file (stdout, stderr, etc.)
         """
-        log_path = os.path.join(django_settings.BUILDTOP, key)
-        if os.path.exists(log_path):
-            with open(log_path, 'r') as log:
-                return log.read()
-        else:
-            LOGGER.warning("%s not found", log_path)
+        key_path = os.path.join(django_settings.BUILDTOP, key)
+        if not os.path.exists(key_path):
+            key_path = _as_abspath(key)
+        if os.path.exists(key_path):
+            with open(key_path, 'r') as key_file:
+                return key_file.read()
+            LOGGER.warning("%s not found", key_path)
         return None
